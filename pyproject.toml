@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxroom"
+version = "0.1.0"
+description = "Room segmentation from partial observations during robot exploration"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.24,<3", "scipy>=1.10", "PyYAML>=6", "Pillow>=10",
+  "shapely>=2", "matplotlib>=3.7", "numba>=0.59", "tqdm>=4.66",
+  "requests>=2.31", "pyzmq>=25", "descartes>=1.1", "skan>=0.11",
+  "opencv-python-headless>=4.8",
+]
+
+[project.optional-dependencies]
+learning = ["torch>=2.2"]
+test = ["pytest>=8"]
+
+[project.scripts]
+voxroom-replay = "voxroom_online.review_replay:main"
+voxroom-train = "voxroom_online.isaac_runtime.scripts.train_door_seed_classifier:main"
+
+[tool.setuptools.packages.find]
+include = ["voxroom_online*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "real_robot/tests"]
+pythonpath = ["."]

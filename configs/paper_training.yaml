@@ -1,0 +1,17 @@
+# Manuscript parameter manifest. The Python TrainingConfig and training CLI
+# use these defaults; this file is also suitable for TrainingConfig.from_mapping.
+learning_rate: 0.0003
+batch_size: 64
+positive_class_weight: 5.60
+checkpoint_selection_mode: fixed_f1
+threshold_selection_mode: fixed
+fixed_keep_threshold: 0.5
+grouped_coordinate_sampling: true
+train_rotation_degrees: [0, 90, 180, 270]
+train_mirror_lr_once: true
+# Implementation choices not numerically specified in the manuscript:
+weight_decay: 0.0001
+max_epochs: 50
+early_stopping_patience: 8
+seed: 0
+precision: float32

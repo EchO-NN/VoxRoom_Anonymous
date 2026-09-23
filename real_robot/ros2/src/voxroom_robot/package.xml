@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>voxroom_robot</name><version>0.1.0</version>
+  <description>M200, FAST-LIO2, OctoMap and VoxRoom integration.</description>
+  <maintainer email="maintainer@example.invalid">Anonymous contributors</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend><depend>rclpy</depend><depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend><depend>std_msgs</depend><depend>tf2</depend><depend>tf2_ros</depend>
+  <depend>octomap</depend><depend>octomap_msgs</depend>
+  <depend>pacecat_m_series_inter</depend><depend>livox_ros_driver2</depend>
+  <exec_depend>octomap_server</exec_depend><exec_depend>fast_lio</exec_depend>
+  <exec_depend>ament_index_python</exec_depend><exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-yaml</exec_depend><exec_depend>python3-numpy</exec_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>
