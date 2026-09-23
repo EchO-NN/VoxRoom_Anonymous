@@ -100,6 +100,12 @@ python -m http.server 8000 --directory site
 Open `http://localhost:8000`. Both videos and all page assets are local. The page
 has no analytics, remote fonts, embeds, or author-account links.
 
+Inline playback uses images sampled from the original silent videos at 12 fps;
+the original MP4 and WebM files are also available from each player. The source
+ZIP includes the original videos and omits the generated image sheets. Rebuild
+the sheets with `python scripts/build_video_playback.py` before previewing the
+website from that ZIP (requires FFmpeg and Pillow).
+
 ## Attribution
 
 Third-party provenance and required notices are retained in

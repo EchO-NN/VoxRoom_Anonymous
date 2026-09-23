@@ -65,10 +65,11 @@ h3 { margin: 0; font-size: 19px; line-height: 1.4; font-weight: 650; letter-spac
 .video-card { margin: 0; min-width: 0; background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
 .video-frame { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 16px; background: #111624; }
 .video-card video { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #111624; }
-.video-frame.compatibility-player video { position: absolute; inset: 0; height: 100%; opacity: 0; }
-.video-canvas, .video-poster { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.video-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.image-playback { position: absolute; inset: 0; overflow: hidden; cursor: pointer; }
+.image-playback .video-sheet { position: absolute; max-width: none; object-fit: fill; pointer-events: none; user-select: none; }
 .video-play { z-index: 2; }
-.compatibility-player .video-play { inset: 0; height: 100%; }
+.image-player .video-play { inset: 0; height: 100%; }
 .video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 6px 0; font-size: 12px; }
 .video-controls button { display: grid; place-items: center; min-width: 46px; min-height: 36px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 9px; background: var(--wash); color: var(--ink); font-size: 12px; font-weight: 600; }
 .video-controls button:hover { background: var(--blue-light); color: var(--blue); }

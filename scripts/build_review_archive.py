@@ -15,6 +15,9 @@ def main():
         for name in sorted(filter(None, files)):
             if name in {"site/assets/voxroom-review-source.zip", "site/assets/voxroom-review-source.zip.sha256"}:
                 continue
+            # Image sheets are generated from the original videos included below.
+            if name.startswith("site/assets/playback/"):
+                continue
             path = root / name
             if path.is_symlink() or not path.is_file():
                 raise ValueError(f"source archive requires regular files: {name}")
