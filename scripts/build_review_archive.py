@@ -2,6 +2,7 @@
 """Build a deterministic source ZIP from the staged/tracked review files."""
 from pathlib import Path
 import hashlib
+import re
 import subprocess
 import zipfile
 
@@ -25,7 +26,14 @@ def main():
             info.compress_type = zipfile.ZIP_DEFLATED
             info.create_system = 3
             info.external_attr = 0o100644 << 16
-            archive.writestr(info, path.read_bytes())
+            data = path.read_bytes()
+            if name == "README.md":
+                # Keep the account-bearing website link out of the review ZIP.
+                data = re.sub(
+                    rb"(?m)^\*\*Project website:\*\* .*\n\nWatch the videos[^\n]*\n\n",
+                    b"", data,
+                )
+            archive.writestr(info, data)
     digest = hashlib.sha256(output.read_bytes()).hexdigest()
     output.with_suffix(".zip.sha256").write_text(f"{digest}  {output.name}\n")
     print(f"Built {output.name}: {output.stat().st_size} bytes; SHA-256 {digest}")

@@ -2,12 +2,16 @@
 
 **Room Segmentation from Partial Observations during Robot Exploration**
 
+**Project website:** [https://echo-nn.github.io/VoxRoom_Anonymous/](https://echo-nn.github.io/VoxRoom_Anonymous/)
+
+Watch the videos and explore the method and experimental results on the website.
+
 The implementation constructs a
 Structural Free Map (SFM), combines 3D column evidence with 2D ray-casting entry
 candidates, verifies candidates with a dual-branch neural network, and fits
 separators to partition the observed structural-free domain.
 
-[Online project page](#online-project-page) · [Method and parameters](docs/method.md) ·
+[Method and parameters](docs/method.md) ·
 [Evaluation](docs/evaluation.md) · [Real robot](docs/real_robot.md)
 
 ## Overview
@@ -90,20 +94,6 @@ replay and training paths do not require launching Isaac Sim.
 The robot pipeline uses FAST-LIO2 poses and OctoMap occupancy in a gravity-aligned
 frame. See [real-robot setup](docs/real_robot.md) for dependencies and launch
 commands.
-
-## Online project page
-
-The website is live on **GitHub Pages**. Use the website link in this
-repository's **About** panel to watch the videos and explore the method and
-results online. No local server or installation is needed.
-
-The overview video includes its original audio, with playback, seeking, and
-mute controls. The short simulation sequence is silent. MP4 and WebM downloads
-are available below each player.
-
-The website is served from the root of the `gh-pages` branch; `site/` contains
-its source. See [website maintenance](docs/website.md) for previewing or updating
-it.
 
 ## Attribution
 
