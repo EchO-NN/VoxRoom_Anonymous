@@ -18,6 +18,8 @@ const settings = {
 
 const svgNS = 'http://www.w3.org/2000/svg';
 const stages = ['20%', '40%', '60%', '70%', '80%', '90%', 'Final'];
+let activeSetting = 'simulation';
+let chartWidth = 0;
 function svgElement(tag, attributes, text) {
   const element = document.createElementNS(svgNS, tag);
   Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
@@ -26,17 +28,23 @@ function svgElement(tag, attributes, text) {
 }
 
 function renderChart(setting) {
+  activeSetting = setting;
   const data = settings[setting];
-  const svg = svgElement('svg', {viewBox: '0 0 620 262', role: 'img', 'aria-labelledby': 'plot-title plot-desc'});
+  const width = Math.max(220, Math.round(document.getElementById('progress-chart').clientWidth));
+  chartWidth = width;
+  const svg = svgElement('svg', {viewBox: `0 0 ${width} 262`, role: 'img', 'aria-labelledby': 'plot-title plot-desc'});
   svg.append(svgElement('title', {id: 'plot-title'}, `${data.title}: F1 and room-mIoU by exploration progress`));
   svg.append(svgElement('desc', {id: 'plot-desc'}, stages.map((stage, index) => `${stage}: F1 ${data.f1[index]}%, room-mIoU ${data.iou[index]}%.`).join(' ')));
-  const x = index => 40 + index * 90;
+  const x = index => 48 + index * (width - 72) / 6;
   const y = value => 218 - (value - 60) * 4.65;
   [60, 70, 80, 90, 100].forEach(value => {
-    svg.append(svgElement('line', {x1: 40, y1: y(value), x2: 580, y2: y(value), stroke: '#e7e9ee', 'stroke-width': '1'}));
-    svg.append(svgElement('text', {x: 28, y: y(value) + 4, fill: '#818792', 'font-size': '10', 'text-anchor': 'end'}, value));
+    svg.append(svgElement('line', {x1: 48, y1: y(value), x2: x(6), y2: y(value), stroke: '#e7e9ee', 'stroke-width': '1'}));
+    svg.append(svgElement('text', {x: 36, y: y(value) + 4, fill: '#6c768b', 'text-anchor': 'end'}, value));
   });
-  stages.forEach((stage, index) => svg.append(svgElement('text', {x: x(index), y: 245, fill: '#717782', 'font-size': '10', 'text-anchor': 'middle'}, stage)));
+  stages.forEach((stage, index) => {
+    if (width < 380 && index % 2) return;
+    svg.append(svgElement('text', {x: x(index), y: 245, fill: '#6c768b', 'text-anchor': 'middle'}, stage));
+  });
   [['f1', '#315de5'], ['iou', '#727986']].forEach(([metric, color]) => {
     svg.append(svgElement('polyline', {points: data[metric].map((value, index) => `${x(index)},${y(value)}`).join(' '), fill: 'none', stroke: color, 'stroke-width': '2.5', 'stroke-linejoin': 'round', 'stroke-dasharray': metric === 'iou' ? '6 4' : 'none'}));
     data[metric].forEach((value, index) => {
@@ -45,7 +53,7 @@ function renderChart(setting) {
       svg.append(dot);
     });
     const last = data[metric][6];
-    svg.append(svgElement('text', {x: 580, y: y(last) - 12, fill: color, 'font-size': '11', 'font-weight': '600', 'text-anchor': 'end'}, last.toFixed(1)));
+    svg.append(svgElement('text', {x: x(6), y: y(last) - 12, fill: color, 'font-weight': '600', 'text-anchor': 'end'}, last.toFixed(1)));
   });
   document.getElementById('progress-chart').replaceChildren(svg);
   document.getElementById('chart-title').textContent = data.title;
@@ -63,3 +71,71 @@ function renderChart(setting) {
 
 document.querySelectorAll('[data-setting]').forEach(button => button.addEventListener('click', () => renderChart(button.dataset.setting)));
 renderChart('simulation');
+if (window.ResizeObserver) new ResizeObserver(entries => {
+  if (Math.max(220, Math.round(entries[0].contentRect.width)) !== chartWidth) renderChart(activeSetting);
+}).observe(document.getElementById('progress-chart'));
+
+// Paper tables remain readable without JavaScript; tabs progressively enhance them.
+const paperTabs = [...document.querySelectorAll('[data-paper-tab]')];
+function selectPaperTable(key) {
+  paperTabs.forEach(tab => {
+    const selected = tab.dataset.paperTab === key;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    document.getElementById(tab.getAttribute('aria-controls')).hidden = !selected;
+  });
+}
+paperTabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => selectPaperTable(tab.dataset.paperTab));
+  tab.addEventListener('keydown', event => {
+    let next;
+    if (event.key === 'ArrowRight') next = (index + 1) % paperTabs.length;
+    else if (event.key === 'ArrowLeft') next = (index + paperTabs.length - 1) % paperTabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = paperTabs.length - 1;
+    else return;
+    event.preventDefault();
+    selectPaperTable(paperTabs[next].dataset.paperTab);
+    paperTabs[next].focus();
+    paperTabs[next].scrollIntoView({block: 'nearest', inline: 'nearest'});
+  });
+});
+selectPaperTable('comparison');
+
+const comparisonData = JSON.parse(document.getElementById('paper-comparison-data').textContent);
+const stageSelect = document.getElementById('comparison-stage');
+function renderComparison(stage) {
+  const data = comparisonData.stages[stage];
+  const table = document.getElementById('comparison-table');
+  const header = document.createElement('tr');
+  ['Method', ...data.metrics.map(metric => `${metric} ↑`)].forEach(label => {
+    const cell = document.createElement('th');
+    cell.scope = 'col';
+    cell.textContent = label;
+    header.append(cell);
+  });
+  const best = data.metrics.map((_, column) => Math.max(...data.rows.map(row => row[column])));
+  const rows = [10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(index => {
+    const row = document.createElement('tr');
+    if (comparisonData.methods[index] === 'VoxRoom') row.className = 'highlight';
+    const method = document.createElement('th');
+    method.scope = 'row';
+    method.textContent = comparisonData.methods[index];
+    row.append(method);
+    data.rows[index].forEach((value, column) => {
+      const cell = document.createElement('td');
+      if (value === best[column]) {
+        const strong = document.createElement('strong');
+        strong.textContent = value.toFixed(1);
+        cell.append(strong);
+      } else cell.textContent = value.toFixed(1);
+      row.append(cell);
+    });
+    return row;
+  });
+  table.tHead.replaceChildren(header);
+  table.tBodies[0].replaceChildren(...rows);
+  table.caption.textContent = `Table I. Simulation segmentation performance, ${stage.toLowerCase()} (%)`;
+  document.getElementById('comparison-snapshots').textContent = `${data.snapshots.toLocaleString('en-US')} evaluation snapshots`;
+}
+stageSelect.addEventListener('change', () => renderComparison(stageSelect.value));
