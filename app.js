@@ -1,14 +1,42 @@
 'use strict';
 
 const navigation = document.querySelector('.header');
+const navigationToggle = navigation.querySelector('.nav-toggle');
+const mobileNavigation = window.matchMedia('(max-width: 600px)');
 const navigationSections = [...navigation.querySelectorAll('nav a')].map(link => ({
   link, section: document.querySelector(link.getAttribute('href')),
 }));
+navigation.classList.add('navigation-ready');
 let navigationFrame = null;
+let navigationHeight = 0;
+let navigationTop = 0;
+let previousScrollY = window.scrollY;
+let scrollDistance = 0;
+
+function toggleNavigationMenu(open) {
+  navigation.classList.toggle('menu-open', open);
+  navigationToggle.setAttribute('aria-expanded', String(open));
+  if (open) navigation.classList.remove('is-hidden');
+}
+
 function updateNavigation() {
   navigationFrame = null;
-  navigation.classList.toggle('is-scrolled', window.scrollY > 16);
-  const threshold = navigation.getBoundingClientRect().bottom + 36;
+  const scrollY = Math.max(0, Math.min(window.scrollY, document.documentElement.scrollHeight - window.innerHeight));
+  const delta = scrollY - previousScrollY;
+  if (delta) {
+    scrollDistance = Math.sign(delta) === Math.sign(scrollDistance) ? scrollDistance + delta : delta;
+    previousScrollY = scrollY;
+  }
+  const keyboardFocus = navigation.querySelector(':focus-visible');
+  if (scrollY < 80 || scrollDistance < -12 || keyboardFocus) {
+    navigation.classList.remove('is-hidden');
+  } else if (scrollY > 160 && scrollDistance > 24) {
+    toggleNavigationMenu(false);
+    navigation.classList.add('is-hidden');
+  }
+  navigation.classList.toggle('is-scrolled', scrollY > 16);
+  // Keep section tracking stable while the header slides out of view.
+  const threshold = navigationHeight + navigationTop + 36;
   let active = null;
   for (const entry of navigationSections) {
     if (entry.section.getBoundingClientRect().top <= threshold) active = entry.link;
@@ -22,10 +50,32 @@ function updateNavigation() {
   }
 }
 function sizeNavigation() {
-  const top = parseFloat(getComputedStyle(navigation).top) || 0;
-  document.documentElement.style.setProperty('--nav-offset', `${navigation.offsetHeight + top + 24}px`);
+  navigationHeight = navigation.offsetHeight;
+  navigationTop = parseFloat(getComputedStyle(navigation).top) || 0;
+  document.documentElement.style.setProperty('--nav-offset', `${navigationHeight + navigationTop + 16}px`);
   updateNavigation();
 }
+navigationToggle.addEventListener('click', () => {
+  toggleNavigationMenu(navigationToggle.getAttribute('aria-expanded') !== 'true');
+});
+navigation.addEventListener('focusin', () => {
+  scrollDistance = 0;
+  previousScrollY = window.scrollY;
+  navigation.classList.remove('is-hidden');
+});
+navigation.addEventListener('click', event => {
+  if (event.target.closest('a')) toggleNavigationMenu(false);
+});
+document.addEventListener('pointerdown', event => {
+  if (!navigation.contains(event.target)) toggleNavigationMenu(false);
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && navigation.classList.contains('menu-open')) {
+    toggleNavigationMenu(false);
+    navigationToggle.focus({preventScroll: true});
+  }
+});
+mobileNavigation.addEventListener('change', () => toggleNavigationMenu(false));
 window.addEventListener('scroll', () => {
   if (navigationFrame === null) navigationFrame = requestAnimationFrame(updateNavigation);
 }, {passive: true});
