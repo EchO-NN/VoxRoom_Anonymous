@@ -1,5 +1,38 @@
 'use strict';
 
+const navigation = document.querySelector('.header');
+const navigationSections = [...navigation.querySelectorAll('nav a')].map(link => ({
+  link, section: document.querySelector(link.getAttribute('href')),
+}));
+let navigationFrame = null;
+function updateNavigation() {
+  navigationFrame = null;
+  navigation.classList.toggle('is-scrolled', window.scrollY > 16);
+  const threshold = navigation.getBoundingClientRect().bottom + 36;
+  let active = null;
+  for (const entry of navigationSections) {
+    if (entry.section.getBoundingClientRect().top <= threshold) active = entry.link;
+  }
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+    active = navigationSections[navigationSections.length - 1].link;
+  }
+  for (const {link} of navigationSections) {
+    if (link === active) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+function sizeNavigation() {
+  const top = parseFloat(getComputedStyle(navigation).top) || 0;
+  document.documentElement.style.setProperty('--nav-offset', `${navigation.offsetHeight + top + 24}px`);
+  updateNavigation();
+}
+window.addEventListener('scroll', () => {
+  if (navigationFrame === null) navigationFrame = requestAnimationFrame(updateNavigation);
+}, {passive: true});
+window.addEventListener('resize', sizeNavigation);
+if (window.ResizeObserver) new ResizeObserver(sizeNavigation).observe(navigation);
+sizeNavigation();
+
 // Stage-wise segmentation results.
 const settings = {
   simulation: {
