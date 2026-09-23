@@ -67,6 +67,129 @@ document.querySelectorAll('.video-card').forEach(card => {
   const video = card.querySelector('video');
   const button = card.querySelector('.video-play');
   const status = card.querySelector('.video-status');
+  const frame = card.querySelector('.video-frame');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'video-player';
+  frame.before(wrapper);
+  wrapper.append(frame);
+  const canvas = document.createElement('canvas');
+  canvas.className = 'video-canvas';
+  canvas.hidden = true;
+  canvas.setAttribute('aria-hidden', 'true');
+  frame.append(canvas);
+  const poster = new Image();
+  poster.className = 'video-poster';
+  poster.src = video.poster;
+  poster.alt = '';
+  frame.insertBefore(poster, canvas);
+  const context = canvas.getContext('2d', {alpha: false, willReadFrequently: true});
+  const controls = document.createElement('div');
+  controls.className = 'video-controls';
+  controls.innerHTML = '<button type="button" class="video-toggle" aria-label="Play video">Play</button><input class="video-progress" type="range" min="0" max="1" step="0.1" value="0" aria-label="Video position" disabled><output class="video-time">0:00 / 0:00</output><button type="button" class="video-fullscreen" aria-label="Enter fullscreen">⛶</button>';
+  wrapper.append(controls);
+  const toggle = controls.querySelector('.video-toggle');
+  const progress = controls.querySelector('.video-progress');
+  const time = controls.querySelector('.video-time');
+  const fullscreen = controls.querySelector('.video-fullscreen');
+  const mode = document.createElement('button');
+  mode.type = 'button';
+  mode.className = 'video-mode';
+  card.querySelector('.video-links').prepend(mode);
+  let compatibility = Boolean(context);
+  let animation = null;
+  let lastPaint = -1;
+  const formatTime = seconds => {
+    const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));
+    return `${Math.floor(value / 60)}:${String(value % 60).padStart(2, '0')}`;
+  };
+  const updateControls = () => {
+    const duration = Number.isFinite(video.duration) ? video.duration : 0;
+    progress.disabled = duration <= 0;
+    progress.max = duration || 1;
+    progress.value = video.currentTime;
+    progress.setAttribute('aria-valuetext', `${formatTime(video.currentTime)} of ${formatTime(duration)}`);
+    time.textContent = `${formatTime(video.currentTime)} / ${formatTime(duration)}`;
+    toggle.textContent = video.paused ? 'Play' : 'Pause';
+    toggle.setAttribute('aria-label', video.paused ? 'Play video' : 'Pause video');
+  };
+  const paintFrame = () => {
+    if (!compatibility || !context || video.readyState < 2 || !video.videoWidth) return;
+    if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+    }
+    try {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.hidden = false;
+      poster.hidden = true;
+    } catch (_) {
+      // Leave the native poster visible until a decoded frame is available.
+    }
+  };
+  const paintLoop = now => {
+    animation = null;
+    if (!compatibility || video.paused || video.ended) return;
+    if (now - lastPaint >= 30) {
+      paintFrame();
+      lastPaint = now;
+    }
+    animation = requestAnimationFrame(paintLoop);
+  };
+  const startPainting = () => {
+    if (compatibility && animation === null && !video.paused) animation = requestAnimationFrame(paintLoop);
+  };
+  const applyMode = () => {
+    frame.classList.toggle('compatibility-player', compatibility);
+    controls.hidden = !compatibility;
+    video.controls = !compatibility;
+    canvas.hidden = !compatibility || video.readyState < 2;
+    poster.hidden = !compatibility || !canvas.hidden;
+    mode.textContent = compatibility ? 'Standard player' : 'Compatibility player';
+    mode.hidden = !context;
+    mode.title = compatibility ? 'Switch to the browser video player' : 'Use this if the video has a black picture';
+    if (compatibility) {
+      paintFrame();
+      startPainting();
+    } else if (animation !== null) {
+      cancelAnimationFrame(animation);
+      animation = null;
+    }
+  };
+  mode.addEventListener('click', () => {
+    compatibility = !compatibility;
+    applyMode();
+  });
+  toggle.addEventListener('click', () => video.paused ? play() : video.pause());
+  frame.addEventListener('click', event => {
+    if (compatibility && event.target === video) video.paused ? play() : video.pause();
+  });
+  progress.addEventListener('input', () => {
+    video.currentTime = Number(progress.value);
+    updateControls();
+  });
+  progress.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + (event.key === 'ArrowRight' ? 5 : -5)));
+    }
+  });
+  fullscreen.hidden = !document.fullscreenEnabled;
+  fullscreen.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await wrapper.requestFullscreen();
+    } catch (_) { video.focus(); }
+  });
+  document.addEventListener('fullscreenchange', () => fullscreen.setAttribute('aria-label', document.fullscreenElement === wrapper ? 'Exit fullscreen' : 'Enter fullscreen'));
+  ['loadedmetadata', 'timeupdate', 'durationchange', 'pause', 'play', 'ended'].forEach(event => video.addEventListener(event, updateControls));
+  ['loadeddata', 'seeked', 'pause'].forEach(event => video.addEventListener(event, paintFrame));
+  video.addEventListener('playing', startPainting);
+  video.addEventListener('pause', () => {
+    if (animation !== null) cancelAnimationFrame(animation);
+    animation = null;
+  });
+  applyMode();
+  updateControls();
   const sources = [...video.querySelectorAll('source')];
   const failed = new Set();
   let wantsPlayback = false;

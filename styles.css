@@ -63,8 +63,24 @@ h3 { margin: 0; font-size: 19px; line-height: 1.4; font-weight: 650; letter-spac
 .overview-heading h2 { font-size: 25px; letter-spacing: -.6px; }
 .overview-heading > p { font-size: 14px; }
 .video-card { margin: 0; min-width: 0; background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
-.video-frame { position: relative; overflow: hidden; border-radius: 16px; background: #111624; isolation: isolate; }
-.video-card video { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #111624; border-radius: inherit; }
+.video-frame { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 16px; background: #111624; }
+.video-card video { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #111624; }
+.video-frame.compatibility-player video { position: absolute; inset: 0; height: 100%; opacity: 0; }
+.video-canvas, .video-poster { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.video-play { z-index: 2; }
+.compatibility-player .video-play { inset: 0; height: 100%; }
+.video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 6px 0; font-size: 12px; }
+.video-controls button { display: grid; place-items: center; min-width: 46px; min-height: 36px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 9px; background: var(--wash); color: var(--ink); font-size: 12px; font-weight: 600; }
+.video-controls button:hover { background: var(--blue-light); color: var(--blue); }
+.video-progress { flex: 1; min-width: 40px; height: 28px; accent-color: var(--blue); cursor: pointer; }
+.video-time { min-width: 82px; white-space: nowrap; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--body); text-align: center; }
+.video-controls .video-fullscreen { min-width: 36px; font-size: 22px; line-height: 1; }
+.video-links .video-mode { border: 0; padding: 0; color: var(--blue); background: transparent; font: inherit; cursor: pointer; }
+.video-mode:hover { text-decoration: underline; text-underline-offset: 3px; }
+.video-player:fullscreen { display: flex; flex-direction: column; width: 100%; height: 100%; background: #111624; }
+.video-player:fullscreen .video-frame { flex: 1; min-height: 0; width: 100%; aspect-ratio: auto; border-radius: 0; }
+.video-player:fullscreen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.video-player:fullscreen .video-controls { padding: 12px 20px; background: white; }
 .video-play { position: absolute; inset: 0 0 48px; width: 100%; height: calc(100% - 48px); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; border: 0; color: white; background: linear-gradient(transparent 40%, #0c132d20); border-radius: inherit; }
 .play-icon { width: 72px; height: 72px; display: grid; place-items: center; padding-left: 4px; border: 1px solid #ffffff70; border-radius: 50%; background: #fffef9f2; color: var(--blue); font-size: 25px; box-shadow: 0 6px 30px #0004; transition: transform .18s; }
 .video-play:hover .play-icon { transform: scale(1.08); }
@@ -204,6 +220,10 @@ footer > a { white-space: nowrap; font-weight: 550; }
   .video-main figcaption { font-size: 12px; padding: 12px 6px 0; }
   .duration { font-size: 11px; }
   .video-links { padding: 8px 6px 2px; font-size: 11px; }
+  .video-controls { gap: 6px; }
+  .video-controls button { min-width: 42px; font-size: 11px; }
+  .video-controls .video-fullscreen { min-width: 30px; font-size: 20px; }
+  .video-time { min-width: 74px; font-size: 10px; }
   .chapters { grid-template-columns: repeat(2,1fr); gap: 8px; margin-top: 12px; }
   .chapters button { font-size: 12px; padding: 11px 13px; border-radius: 12px; }
   .chapters button span { font-size: 11px; }
