@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import io
 from pathlib import Path
 import re
@@ -37,6 +38,13 @@ def main():
                         inspect(member_name + "::metadata", member.comment + member.extra, True)
             return
         text = data.decode("utf-8", errors="ignore")
+        if name.lower().endswith(".svg"):
+            def inspect_embedded(match):
+                # Encoded image bytes can coincidentally spell identity terms;
+                # inspect the decoded payload and retain its MIME type instead.
+                inspect(name + "::embedded-image", base64.b64decode(match[2]), True)
+                return "data:" + match[1] + ";base64,[inspected]"
+            text = re.sub(r"data:([^;,\s]+);base64,([A-Za-z0-9+/=\s]+)", inspect_embedded, text)
         folded = (name + "\n" + text).casefold()
         if any(term in folded for term in terms):
             findings.append((name, "private identity term"))
