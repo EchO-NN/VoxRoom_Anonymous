@@ -7,7 +7,7 @@ Structural Free Map (SFM), combines 3D column evidence with 2D ray-casting entry
 candidates, verifies candidates with a dual-branch neural network, and fits
 separators to partition the observed structural-free domain.
 
-[Project page](site/index.html) · [Method and parameters](docs/method.md) ·
+[Online project page](#online-project-page) · [Method and parameters](docs/method.md) ·
 [Evaluation](docs/evaluation.md) · [Real robot](docs/real_robot.md)
 
 ## Overview
@@ -91,20 +91,19 @@ The robot pipeline uses FAST-LIO2 poses and OctoMap occupancy in a gravity-align
 frame. See [real-robot setup](docs/real_robot.md) for dependencies and launch
 commands.
 
-## Videos and local project page
+## Online project page
 
-```bash
-python -m http.server 8000 --directory site
-```
+The website is live on **GitHub Pages**. Use the website link in this
+repository's **About** panel to watch the videos and explore the method and
+results online. No local server or installation is needed.
 
-Open `http://localhost:8000`. Both videos and all page assets are local. The page
-has no analytics, remote fonts, embeds, or author-account links.
+The overview video includes its original audio, with playback, seeking, and
+mute controls. The short simulation sequence is silent. MP4 and WebM downloads
+are available below each player.
 
-Inline playback uses images sampled from the original silent videos at 12 fps;
-the original MP4 and WebM files are also available from each player. The source
-ZIP includes the original videos and omits the generated image sheets. Rebuild
-the sheets with `python scripts/build_video_playback.py` before previewing the
-website from that ZIP (requires FFmpeg and Pillow).
+The website is served from the root of the `gh-pages` branch; `site/` contains
+its source. See [website maintenance](docs/website.md) for previewing or updating
+it.
 
 ## Attribution
 

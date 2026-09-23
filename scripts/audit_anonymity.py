@@ -25,6 +25,17 @@ def main():
     ]
 
     def inspect(name, data, nested=False):
+        if name.endswith(".zip") and not nested:
+            # Inspect the extracted content and metadata. Compressed bytes can
+            # accidentally spell short identity terms when decoded as text.
+            with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                inspect(name, archive.comment, True)
+                for member in archive.infolist():
+                    member_name = name + "::" + member.filename
+                    inspect(member_name, archive.read(member), True)
+                    if member.comment or member.extra:
+                        inspect(member_name + "::metadata", member.comment + member.extra, True)
+            return
         text = data.decode("utf-8", errors="ignore")
         folded = (name + "\n" + text).casefold()
         if any(term in folded for term in terms):
@@ -32,10 +43,6 @@ def main():
         for reason, pattern in patterns:
             if pattern.search(text):
                 findings.append((name, reason))
-        if name.endswith(".zip") and not nested:
-            with zipfile.ZipFile(io.BytesIO(data)) as archive:
-                for member in archive.infolist():
-                    inspect(name + "::" + member.filename, archive.read(member), True)
 
     count = 0
     for name in filter(None, paths):

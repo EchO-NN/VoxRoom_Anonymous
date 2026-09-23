@@ -299,3 +299,8 @@ footer > a { white-space: nowrap; font-weight: 550; }
   html { scroll-behavior: auto; }
   * { transition: none !important; }
 }
+
+.video-controls .video-sound { min-width: 36px; padding: 5px; }
+.video-sound .sound-off, .video-sound.is-muted .sound-waves { display: none; }
+.video-sound.is-muted .sound-off { display: inline; }
+@media (max-width: 600px) { .video-controls .video-sound { min-width: 30px; } }
