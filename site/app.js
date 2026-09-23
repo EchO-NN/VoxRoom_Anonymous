@@ -62,16 +62,92 @@ function renderChart(setting) {
 }
 
 document.querySelectorAll('[data-setting]').forEach(button => button.addEventListener('click', () => renderChart(button.dataset.setting)));
-document.querySelectorAll('[data-seek]').forEach(button => button.addEventListener('click', () => {
-  const video = document.querySelector('.video-main video');
-  const seekAndPlay = () => {
-    video.currentTime = Number(button.dataset.seek);
-    video.play().catch(() => video.focus());
+const players = new Map();
+document.querySelectorAll('.video-card').forEach(card => {
+  const video = card.querySelector('video');
+  const button = card.querySelector('.video-play');
+  const status = card.querySelector('.video-status');
+  const sources = [...video.querySelectorAll('source')];
+  const failed = new Set();
+  let wantsPlayback = false;
+  let pendingTime = null;
+  let loadingTimer;
+  video.muted = true;
+  button.hidden = false;
+
+  const message = text => {
+    status.textContent = text;
+    status.hidden = !text;
   };
-  if (video.readyState >= 1) seekAndPlay();
-  else {
-    video.addEventListener('loadedmetadata', seekAndPlay, {once: true});
-    video.load();
-  }
+  const clearLoading = () => {
+    clearTimeout(loadingTimer);
+    message('');
+  };
+  const play = () => {
+    wantsPlayback = true;
+    const attempt = video.play();
+    if (attempt) attempt.catch(error => {
+      if (error.name === 'AbortError') return;
+      button.hidden = false;
+      if (error.name === 'NotAllowedError') {
+        message('Press the play button to start the video.');
+      } else if (!video.error) {
+        message('The video could not start. You can open either version below.');
+      }
+    });
+  };
+  const seek = seconds => {
+    pendingTime = seconds;
+    wantsPlayback = true;
+    if (video.readyState >= 1) {
+      video.currentTime = pendingTime;
+      pendingTime = null;
+    }
+    play();
+  };
+  video.addEventListener('loadedmetadata', () => {
+    if (pendingTime !== null) {
+      video.currentTime = Math.min(pendingTime, video.duration);
+      pendingTime = null;
+    }
+  });
+  video.addEventListener('playing', () => {
+    wantsPlayback = true;
+    button.hidden = true;
+    clearLoading();
+  });
+  video.addEventListener('pause', () => {
+    wantsPlayback = false;
+    clearLoading();
+  });
+  video.addEventListener('ended', () => { button.hidden = false; });
+  video.addEventListener('waiting', () => {
+    clearTimeout(loadingTimer);
+    loadingTimer = setTimeout(() => {
+      if (!video.paused) message('Loading video…');
+    }, 1500);
+  });
+  video.addEventListener('error', () => {
+    failed.add(video.currentSrc);
+    const fallback = sources.find(source => !failed.has(source.src) && video.canPlayType(source.type));
+    if (fallback) {
+      pendingTime = pendingTime ?? video.currentTime;
+      video.src = fallback.src;
+      video.load();
+      if (wantsPlayback) play();
+    } else {
+      clearTimeout(loadingTimer);
+      button.hidden = false;
+      message('The video could not load. Open either version using the links below.');
+    }
+  });
+  button.addEventListener('click', play);
+  players.set(video.id, {play, seek});
+});
+document.querySelectorAll('[data-seek]').forEach(button => button.addEventListener('click', () => {
+  players.get('overview-video').seek(Number(button.dataset.seek));
+}));
+document.querySelectorAll('[data-watch]').forEach(link => link.addEventListener('click', () => {
+  players.get(link.dataset.watch).play();
 }));
 renderChart('simulation');

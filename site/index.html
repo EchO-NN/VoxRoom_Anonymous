@@ -1,95 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VoxRoom: room segmentation from partial observations during robot exploration. Method, experiments, videos, and source code.">
-  <meta name="referrer" content="no-referrer">
-  <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>VoxRoom · Room Segmentation during Robot Exploration</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="VoxRoom: room segmentation from partial observations during robot exploration. Method, experiments, videos, and source code." name="description"/>
+<meta content="no-referrer" name="referrer"/>
+<meta content="noindex, nofollow, noarchive" name="robots"/>
+<title>VoxRoom · Room Segmentation during Robot Exploration</title>
+<link href="data:," rel="icon"/>
+<link href="styles.css?v=20260923-2" rel="stylesheet"/>
+<script defer="" src="app.js?v=20260923-2"></script>
+<link as="font" crossorigin="anonymous" href="assets/fonts/InterVariable.woff2" rel="preload" type="font/woff2"/></head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="header wrap">
-    <a class="brand" href="#" aria-label="VoxRoom home">VoxRoom<span>.</span></a>
-    <nav aria-label="Primary navigation"><a href="#demos">Demo</a><a href="#method">Method</a><a href="#results">Results</a><a href="#code">Code <span aria-hidden="true">↗</span></a></nav>
-  </header>
-  <main id="main">
-    <section class="hero wrap" aria-labelledby="title">
-      <p class="eyebrow">3D perception / Room segmentation</p>
-      <p class="project-name">VoxRoom</p>
-      <h1 id="title">Room Segmentation from Partial Observations<br class="desktop-break"> during Robot Exploration</h1>
-      <p class="authors">Anonymous Authors</p>
-      <p class="hero-description">Recover room structure from accumulated 3D geometry and planar context,<br class="desktop-break"> while the robot is still exploring.</p>
-      <div class="actions"><a class="button primary" href="#overview"><span aria-hidden="true">▶</span> Watch overview</a><a class="button secondary" href="assets/voxroom-review-source.zip" download>Source code <span aria-hidden="true">↓</span></a></div>
-    </section>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="header wrap">
+<a aria-label="VoxRoom home" class="brand" href="#">VoxRoom<span>.</span></a>
+<nav aria-label="Primary navigation"><a href="#demos">Demo</a><a href="#method">Method</a><a href="#results">Results</a><a href="#code">Code <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main id="main">
+<section aria-labelledby="title" class="hero wrap">
+<p class="eyebrow">3D perception · Robot exploration</p>
+<p class="project-name">VoxRoom</p>
+<h1 id="title">Room Segmentation from Partial Observations<br class="desktop-break"/> during Robot Exploration</h1>
+<p class="authors">Anonymous Authors</p>
+<p class="hero-description">Discover room structure from partial observations, while the robot is still exploring.</p>
+<div class="actions"><a class="button primary" data-watch="overview-video" href="#overview"><span aria-hidden="true">▶</span> Watch overview</a><a class="button secondary" download="" href="assets/voxroom-review-source.zip?v=2">Source code <span aria-hidden="true">↓</span></a></div>
+</section><section aria-labelledby="overview-title" class="section wrap overview-section" id="overview">
+<div class="section-heading overview-heading"><div><p class="eyebrow">Video overview</p><h2 id="overview-title">See VoxRoom in action.</h2></div><p id="overview-description">From partial observations to room maps: the method, simulation results, and real-robot experiments.</p></div>
+<figure class="video-card video-main"><div class="video-frame"><video aria-describedby="overview-description" aria-label="VoxRoom method and experiments overview, silent, with embedded English subtitles" controls="" id="overview-video" muted="" playsinline="" poster="assets/overview-poster.jpg" preload="metadata"><source src="assets/overview-vp9.webm" type='video/webm; codecs="vp9"'/><source src="assets/overview.mp4?v=2" type='video/mp4; codecs="avc1.42C01F"'/>Your browser cannot play this video. Use the video links below.</video><button aria-controls="overview-video" aria-label="Play VoxRoom overview" class="video-play" hidden="" type="button"><span aria-hidden="true" class="play-icon">▶</span><span class="play-label">Play overview</span></button></div><figcaption><span>Method overview &amp; experiments</span><span class="duration">02:58</span></figcaption><p aria-live="polite" class="video-status" hidden="" role="status"></p><div class="video-links"><a href="assets/overview.mp4?v=2" rel="noopener" target="_blank">Open video ↗</a><a href="assets/overview-vp9.webm" rel="noopener" target="_blank">WebM version ↗</a></div></figure>
+<div aria-label="Overview video chapters" class="chapters"><button data-seek="0" type="button"><span>00:00</span> Introduction <b aria-hidden="true">↗</b></button><button data-seek="44" type="button"><span>00:44</span> Method <b aria-hidden="true">↗</b></button><button data-seek="75" type="button"><span>01:15</span> Simulation <b aria-hidden="true">↗</b></button><button data-seek="113" type="button"><span>01:53</span> Real robot <b aria-hidden="true">↗</b></button></div></section>
+<section aria-labelledby="demos-title" class="demo-section wrap" id="demos"><div class="demo-copy"><p class="eyebrow">During exploration</p><h2>A room map that grows with every observation.</h2><p>Follow the robot as it observes new geometry and recovers the structure of connected rooms.</p><span class="demo-tag">11-second simulation sequence</span></div>
+<figure class="video-card video-short featured-video">
+<div class="video-frame">
+<video aria-describedby="exploration-description" aria-label="Simulation exploration sequence, silent" controls="" id="exploration-video" loop="" muted="" playsinline="" poster="assets/exploration-poster.jpg" preload="metadata"><source src="assets/exploration-vp9.webm" type='video/webm; codecs="vp9"'/><source src="assets/exploration.mp4?v=2" type='video/mp4; codecs="avc1.42C01F"'/>Your browser cannot play this video. Use the video links below.</video>
+<button aria-controls="exploration-video" aria-label="Play exploration video" class="video-play" hidden="" type="button"><span aria-hidden="true" class="play-icon">▶</span><span class="play-label">Play demo</span></button></div>
+<figcaption><div><h2 id="demos-title">Partial observations. Evolving room maps.</h2></div><span class="duration">00:11 · SIMULATION</span></figcaption>
+<p id="exploration-description">Clockwise from top left: first-person view, room masks on the navigation map, accumulated voxel map, and the Structural Free Map with entry seeds. Silent, accelerated playback.</p>
+<p aria-live="polite" class="video-status" hidden="" role="status"></p><div class="video-links"><a href="assets/exploration.mp4?v=2" rel="noopener" target="_blank">Open video ↗</a><a href="assets/exploration-vp9.webm" rel="noopener" target="_blank">WebM version ↗</a></div></figure>
+</section>
+<section aria-label="Simulation segmentation results" class="metrics wrap">
+<div class="metric"><strong>94.4<span>%</span></strong><span>F1 score</span></div>
+<div class="metric"><strong>77.8<span>%</span></strong><span>Room-mIoU</span></div>
+<div class="metric"><strong>+12.0<span>pp</span></strong><span>Room-mIoU over the strongest baseline</span></div>
+<p>Simulation benchmarks<span>Scene-balanced averages across exploration stages</span></p>
+</section>
+<section aria-labelledby="method-title" class="method-band" id="method">
+<div class="section wrap">
+<div class="section-heading"><div><p class="eyebrow">Method</p><h2 id="method-title">From geometric evidence<br/>to room boundaries.</h2></div><p>VoxRoom aggregates free-space evidence across voxel heights to reduce furniture-induced fragmentation. Complementary 3D and 2D cues propose entrances, which are verified before becoming room separators.</p></div>
+<div class="pipeline">
+<article><span class="step">01</span><div><h3>Accumulate geometry</h3><p>Fuse depth or LiDAR observations and poses into a voxel map with free, occupied, and unknown states.</p><span class="parameter">0.05 m voxels</span></div></article>
+<article><span class="step">02</span><div><h3>Extract structure</h3><p>Build the Structural Free Map. Take the union of candidates from 3D column screening and 2D ray casting.</p><span class="parameter">3D candidates ∪ 2D candidates</span></div></article>
+<article><span class="step">03</span><div><h3>Verify entry seeds</h3><p>A dual-branch network combines a local voxel patch with wider planar context to score each candidate.</p><span class="parameter">19 × 19 × Z + 41 × 41</span></div></article>
+<article><span class="step">04</span><div><h3>Separate rooms</h3><p>Cluster verified seeds, fit and extend separator segments, then extract connected room regions.</p><span class="parameter">Entry score ≥ 0.5</span></div></article>
+</div>
+<p class="method-footnote">The Structural Free Map represents structural connectivity. Navigation uses a separate Nav-Free Map. Unobserved regions remain unassigned.</p>
+</div>
+</section>
 
-    <section class="demo-section wrap" id="demos" aria-labelledby="demos-title">
-      <figure class="video-card video-short featured-video">
-        <div class="video-frame">
-          <video controls playsinline loop preload="metadata" poster="assets/exploration-poster.jpg" aria-label="Simulation exploration sequence, silent" aria-describedby="exploration-description">
-            <source src="assets/exploration.mp4" type="video/mp4">
-            Your browser does not support embedded video. <a href="assets/exploration.mp4">Download the exploration video</a>.
-          </video>
-        </div>
-        <figcaption><div><p class="eyebrow">Exploration in motion</p><h2 id="demos-title">Partial observations. Evolving room maps.</h2></div><span class="duration">00:11 · SIMULATION</span></figcaption>
-        <p id="exploration-description">Clockwise from top left: first-person view, room masks on the navigation map, accumulated voxel map, and the Structural Free Map with entry seeds. Silent, accelerated playback.</p>
-      </figure>
-    </section>
-
-    <section class="metrics wrap" aria-label="Simulation segmentation results">
-      <div class="metric"><strong>94.4<span>%</span></strong><span>F1 score</span></div>
-      <div class="metric"><strong>77.8<span>%</span></strong><span>Room-mIoU</span></div>
-      <div class="metric"><strong>+12.0<span>pp</span></strong><span>Room-mIoU over the strongest baseline</span></div>
-      <p>Simulation benchmarks<span>Scene-balanced averages across exploration stages</span></p>
-    </section>
-
-    <section class="method-band" id="method" aria-labelledby="method-title">
-      <div class="section wrap">
-        <div class="section-heading"><div><p class="eyebrow">Method</p><h2 id="method-title">From geometric evidence<br>to room boundaries.</h2></div><p>VoxRoom aggregates free-space evidence across voxel heights to reduce furniture-induced fragmentation. Complementary 3D and 2D cues propose entrances, which are verified before becoming room separators.</p></div>
-        <div class="pipeline">
-          <article><span class="step">01</span><div><h3>Accumulate geometry</h3><p>Fuse depth or LiDAR observations and poses into a voxel map with free, occupied, and unknown states.</p><span class="parameter">0.05 m voxels</span></div></article>
-          <article><span class="step">02</span><div><h3>Extract structure</h3><p>Build the Structural Free Map. Take the union of candidates from 3D column screening and 2D ray casting.</p><span class="parameter">3D candidates ∪ 2D candidates</span></div></article>
-          <article><span class="step">03</span><div><h3>Verify entry seeds</h3><p>A dual-branch network combines a local voxel patch with wider planar context to score each candidate.</p><span class="parameter">19 × 19 × Z + 41 × 41</span></div></article>
-          <article><span class="step">04</span><div><h3>Separate rooms</h3><p>Cluster verified seeds, fit and extend separator segments, then extract connected room regions.</p><span class="parameter">Entry score ≥ 0.5</span></div></article>
-        </div>
-        <p class="method-footnote">The Structural Free Map represents structural connectivity. Navigation uses a separate Nav-Free Map. Unobserved regions remain unassigned.</p>
-      </div>
-    </section>
-
-    <section class="section wrap overview-section" id="overview" aria-labelledby="overview-title">
-      <div class="overview-copy"><p class="eyebrow">Video overview</p><h2 id="overview-title">The complete method.<br>In three minutes.</h2><p id="overview-description">The problem, the complete pipeline, simulation comparisons, and four real-robot trials. Silent video with English subtitles.</p><div class="chapters" aria-label="Overview video chapters"><button type="button" data-seek="0"><span>00:00</span> Introduction <b aria-hidden="true">↗</b></button><button type="button" data-seek="44"><span>00:44</span> Method <b aria-hidden="true">↗</b></button><button type="button" data-seek="75"><span>01:15</span> Simulation <b aria-hidden="true">↗</b></button><button type="button" data-seek="113"><span>01:53</span> Real robot <b aria-hidden="true">↗</b></button></div></div>
-      <figure class="video-card video-main"><div class="video-frame"><video controls playsinline preload="metadata" poster="assets/overview-poster.jpg" aria-label="VoxRoom method and experiments overview, silent, with embedded English subtitles" aria-describedby="overview-description"><source src="assets/overview.mp4" type="video/mp4">Your browser does not support embedded video. <a href="assets/overview.mp4">Download the overview video</a>.</video></div><figcaption><span>VoxRoom · Method & experiments</span><span class="duration">02:58</span></figcaption></figure>
-    </section>
-
-    <section class="section wrap" id="results" aria-labelledby="results-title">
-      <div class="section-heading"><div><p class="eyebrow">Results</p><h2 id="results-title">Segmentation throughout exploration.</h2></div><p>Simulation and real-robot experiments evaluate segmentation from partial observations. Simulation methods share the same exploration trajectories and observed evaluation domain.</p></div>
-      <div class="result-tabs" role="group" aria-label="Choose result setting"><button type="button" data-setting="simulation" aria-pressed="true">Simulation</button><button type="button" data-setting="robot" aria-pressed="false">Real robot</button></div>
-      <div class="results-layout">
-        <div class="chart-panel">
-          <div class="chart-header"><h3 id="chart-title">VoxRoom · simulation</h3><div class="chart-legend"><span><i class="f1-key"></i> F1</span><span><i class="iou-key"></i> Room-mIoU</span></div></div>
-          <div id="progress-chart" aria-live="polite"></div>
-          <p class="chart-caption">Exploration progress → &nbsp; <span>Final denotes the last exploration snapshot.</span></p>
-        </div>
-        <div class="results-context" aria-live="polite">
-          <p class="eyebrow" id="result-kicker">InteriorAgent + GRScene</p>
-          <p class="result-large" id="result-count">74 <span>test scenes</span></p>
-          <p id="result-description">370 trajectories and 2,568 evaluation snapshots, from 20% exploration to the final observation.</p>
-          <div class="context-stats"><div><strong id="context-f1">94.4%</strong><span>Average F1</span></div><div><strong id="context-iou">77.8%</strong><span>Average room-mIoU</span></div></div>
-          <p class="small" id="result-protocol">Average within each trajectory, then within each scene, then equally across scenes.</p>
-        </div>
-      </div>
-      <details class="data-details"><summary>View stage-wise numerical results</summary><div class="table-scroll"><table><caption>VoxRoom stage-wise segmentation results (%)</caption><thead><tr><th scope="col">Progress</th><th scope="col">Simulation F1</th><th scope="col">Simulation room-mIoU</th><th scope="col">Real-robot F1</th><th scope="col">Real-robot room-mIoU</th></tr></thead><tbody>
-        <tr><th scope="row">20%</th><td>93.0</td><td>73.9</td><td>94.5</td><td>85.7</td></tr><tr><th scope="row">40%</th><td>93.9</td><td>74.5</td><td>94.7</td><td>87.5</td></tr><tr><th scope="row">60%</th><td>94.4</td><td>75.1</td><td>93.9</td><td>66.8</td></tr><tr><th scope="row">70%</th><td>94.7</td><td>76.9</td><td>95.3</td><td>79.5</td></tr><tr><th scope="row">80%</th><td>94.6</td><td>78.9</td><td>95.4</td><td>76.1</td></tr><tr><th scope="row">90%</th><td>94.9</td><td>81.7</td><td>95.6</td><td>74.4</td></tr><tr><th scope="row">Final</th><td>95.4</td><td>83.8</td><td>97.2</td><td>81.2</td></tr><tr class="highlight"><th scope="row">Average</th><td>94.4</td><td>77.8</td><td>95.2</td><td>78.7</td></tr>
-      </tbody></table></div></details>
-      <div class="comparison-block"><div><h3>Comparison with ten baselines</h3><p>Scene-balanced averages across exploration stages (%). Higher is better.</p><p>Room-mIoU uses one-to-one Hungarian matching. Unmatched ground-truth rooms contribute zero.</p></div><div class="table-scroll"><table><thead><tr><th scope="col">Method</th><th scope="col">F1 ↑</th><th scope="col">Room-mIoU ↑</th></tr></thead><tbody><tr class="highlight"><th scope="row">VoxRoom</th><td><strong>94.4</strong></td><td><strong>77.8</strong></td></tr><tr><th scope="row">Gomez-reprod.</th><td>91.0</td><td>65.5</td></tr><tr><th scope="row">DUDE (Incremental)</th><td>76.5</td><td>51.9</td></tr><tr><th scope="row">DUDE (Offline)</th><td>77.4</td><td>52.5</td></tr><tr><th scope="row">ROSE2</th><td>79.0</td><td>48.3</td></tr><tr><th scope="row">Morphological</th><td>87.7</td><td>40.5</td></tr><tr><th scope="row">Distance Transform</th><td>92.0</td><td>52.9</td></tr><tr><th scope="row">Voronoi</th><td>90.8</td><td>65.8</td></tr><tr><th scope="row">TVARS</th><td>91.1</td><td>49.4</td></tr><tr><th scope="row">OccuSG</th><td>76.1</td><td>50.9</td></tr><tr><th scope="row">SysNav</th><td>79.1</td><td>32.8</td></tr></tbody></table></div></div>
-    </section>
-
-    <section class="code-section wrap" id="code" aria-labelledby="code-title"><div><p class="eyebrow">Implementation</p><h2 id="code-title">Explore the source.</h2><p>Implementation, method configuration, and instructions for running VoxRoom.</p></div><a class="button primary" href="assets/voxroom-review-source.zip" download>Download source code <span aria-hidden="true">↓</span></a></section>
-  </main>
-  <footer class="wrap"><span class="brand">VoxRoom<span>.</span></span><p>Room segmentation during robot exploration</p><a href="#">Back to top ↑</a></footer>
+<section aria-labelledby="results-title" class="section wrap" id="results">
+<div class="section-heading"><div><p class="eyebrow">Results</p><h2 id="results-title">Segmentation throughout exploration.</h2></div><p>Simulation and real-robot experiments evaluate segmentation from partial observations. Simulation methods share the same exploration trajectories and observed evaluation domain.</p></div>
+<div aria-label="Choose result setting" class="result-tabs" role="group"><button aria-pressed="true" data-setting="simulation" type="button">Simulation</button><button aria-pressed="false" data-setting="robot" type="button">Real robot</button></div>
+<div class="results-layout">
+<div class="chart-panel">
+<div class="chart-header"><h3 id="chart-title">VoxRoom · simulation</h3><div class="chart-legend"><span><i class="f1-key"></i> F1</span><span><i class="iou-key"></i> Room-mIoU</span></div></div>
+<div aria-live="polite" id="progress-chart"></div>
+<p class="chart-caption">Exploration progress →   <span>Final denotes the last exploration snapshot.</span></p>
+</div>
+<div aria-live="polite" class="results-context">
+<p class="eyebrow" id="result-kicker">InteriorAgent + GRScene</p>
+<p class="result-large" id="result-count">74 <span>test scenes</span></p>
+<p id="result-description">370 trajectories and 2,568 evaluation snapshots, from 20% exploration to the final observation.</p>
+<div class="context-stats"><div><strong id="context-f1">94.4%</strong><span>Average F1</span></div><div><strong id="context-iou">77.8%</strong><span>Average room-mIoU</span></div></div>
+<p class="small" id="result-protocol">Average within each trajectory, then within each scene, then equally across scenes.</p>
+</div>
+</div>
+<details class="data-details"><summary>View stage-wise numerical results</summary><div class="table-scroll"><table><caption>VoxRoom stage-wise segmentation results (%)</caption><thead><tr><th scope="col">Progress</th><th scope="col">Simulation F1</th><th scope="col">Simulation room-mIoU</th><th scope="col">Real-robot F1</th><th scope="col">Real-robot room-mIoU</th></tr></thead><tbody>
+<tr><th scope="row">20%</th><td>93.0</td><td>73.9</td><td>94.5</td><td>85.7</td></tr><tr><th scope="row">40%</th><td>93.9</td><td>74.5</td><td>94.7</td><td>87.5</td></tr><tr><th scope="row">60%</th><td>94.4</td><td>75.1</td><td>93.9</td><td>66.8</td></tr><tr><th scope="row">70%</th><td>94.7</td><td>76.9</td><td>95.3</td><td>79.5</td></tr><tr><th scope="row">80%</th><td>94.6</td><td>78.9</td><td>95.4</td><td>76.1</td></tr><tr><th scope="row">90%</th><td>94.9</td><td>81.7</td><td>95.6</td><td>74.4</td></tr><tr><th scope="row">Final</th><td>95.4</td><td>83.8</td><td>97.2</td><td>81.2</td></tr><tr class="highlight"><th scope="row">Average</th><td>94.4</td><td>77.8</td><td>95.2</td><td>78.7</td></tr>
+</tbody></table></div></details>
+<div class="comparison-block"><div><h3>Comparison with ten baselines</h3><p>Scene-balanced averages across exploration stages (%). Higher is better.</p><p>Room-mIoU uses one-to-one Hungarian matching. Unmatched ground-truth rooms contribute zero.</p></div><div class="table-scroll"><table><thead><tr><th scope="col">Method</th><th scope="col">F1 ↑</th><th scope="col">Room-mIoU ↑</th></tr></thead><tbody><tr class="highlight"><th scope="row">VoxRoom</th><td><strong>94.4</strong></td><td><strong>77.8</strong></td></tr><tr><th scope="row">Gomez-reprod.</th><td>91.0</td><td>65.5</td></tr><tr><th scope="row">DUDE (Incremental)</th><td>76.5</td><td>51.9</td></tr><tr><th scope="row">DUDE (Offline)</th><td>77.4</td><td>52.5</td></tr><tr><th scope="row">ROSE2</th><td>79.0</td><td>48.3</td></tr><tr><th scope="row">Morphological</th><td>87.7</td><td>40.5</td></tr><tr><th scope="row">Distance Transform</th><td>92.0</td><td>52.9</td></tr><tr><th scope="row">Voronoi</th><td>90.8</td><td>65.8</td></tr><tr><th scope="row">TVARS</th><td>91.1</td><td>49.4</td></tr><tr><th scope="row">OccuSG</th><td>76.1</td><td>50.9</td></tr><tr><th scope="row">SysNav</th><td>79.1</td><td>32.8</td></tr></tbody></table></div></div>
+</section>
+<section aria-labelledby="code-title" class="code-section wrap" id="code"><div><p class="eyebrow">Implementation</p><h2 id="code-title">Explore the source.</h2><p>Implementation, method configuration, and instructions for running VoxRoom.</p></div><a class="button primary" download="" href="assets/voxroom-review-source.zip?v=2">Download source code <span aria-hidden="true">↓</span></a></section>
+</main>
+<footer class="wrap"><span class="brand">VoxRoom<span>.</span></span><p>Room segmentation during robot exploration</p><a href="#">Back to top ↑</a></footer>
 </body>
 </html>

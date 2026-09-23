@@ -12,3 +12,8 @@ and other installed dependencies also retain their own notices.
 
 Optional baseline fallback implementations are diagnostic utilities. They must
 not be substituted for named original baselines in paper comparisons.
+
+The project website bundles the Inter variable font from the
+[Inter project](https://github.com/rsms/inter), distributed under the SIL Open
+Font License 1.1. Its original notice is retained in
+[`site/assets/fonts/LICENSE.txt`](site/assets/fonts/LICENSE.txt).
