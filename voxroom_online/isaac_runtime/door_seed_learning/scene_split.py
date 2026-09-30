@@ -150,7 +150,7 @@ PAPER_SPLIT_COUNTS = {
 
 
 def build_paper_scene_split(rows: Iterable[Mapping[str, object]]) -> dict[str, object]:
-    """Validate explicit physical-scene assignments without selecting scenes."""
+    """Build a split from the supplied physical-scene assignments."""
     datasets: dict[str, str] = {}
     assignments: dict[str, str] = {}
     for row_number, row in enumerate(rows, start=2):

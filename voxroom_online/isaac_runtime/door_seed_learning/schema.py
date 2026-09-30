@@ -49,8 +49,7 @@ SNAPSHOT_FULL_VOXEL_ARRAYS = (
     "voxel_occupancy_z_centers_m",
 )
 
-# Kept as a compatibility export for callers that used to assert that these
-# arrays were absent.  Schema v4 deliberately stores them at coverage events.
+# Compatibility alias; schema v4 stores these arrays at coverage events.
 SNAPSHOT_FORBIDDEN_ARRAYS: tuple[str, ...] = ()
 
 

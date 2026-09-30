@@ -1,4 +1,4 @@
-"""ROS-independent conversion from floor-referenced OctoMap exports."""
+"""Convert floor-referenced OctoMap exports to VoxRoom inputs."""
 from __future__ import annotations
 
 import json
@@ -81,8 +81,7 @@ def prepare_observation(directory, observation, room_config, ceiling_height_m=No
     grid.state[:] = state
     grid.log_odds[state == 1] = grid.config.free_logodds_threshold
     grid.log_odds[state == 2] = grid.config.occupied_logodds_threshold
-    # OctoMap has no camera frustum. Known free/occupied voxels are the available
-    # observation-support evidence; unknown voxels are not fabricated as seen.
+    # Known OctoMap voxels provide observation support.
     grid.sensor_range_count[:] = (state != 0).astype(np.uint8)
     if ceiling_height_m is None:
         z = np.asarray(grid.z_centers_m)

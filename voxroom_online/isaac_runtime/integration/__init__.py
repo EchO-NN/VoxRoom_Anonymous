@@ -1,1 +1,1 @@
-"""Strict cross-runtime integration entry points."""
+"""Integration entry points for external runtimes."""

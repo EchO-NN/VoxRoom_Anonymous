@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Process causal OctoMap observations with the repository's shared VoxRoom core."""
+"""Segment rooms from incoming OctoMap observations."""
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,12 @@
 'use strict';
 
+const anonymousPage = window.location.pathname.match(/^\/w\/([^/]+)\//);
+if (anonymousPage) {
+  document.querySelectorAll('[data-source-code]').forEach(link => {
+    link.href = `/r/${encodeURIComponent(anonymousPage[1])}/`;
+  });
+}
+
 const navigation = document.querySelector('.header');
 const navigationToggle = navigation.querySelector('.nav-toggle');
 const mobileNavigation = window.matchMedia('(max-width: 600px)');
@@ -83,7 +90,7 @@ window.addEventListener('resize', sizeNavigation);
 if (window.ResizeObserver) new ResizeObserver(sizeNavigation).observe(navigation);
 sizeNavigation();
 
-// Stage-wise segmentation results.
+// Stage results reported in the paper.
 const settings = {
   simulation: {
     title: 'VoxRoom · simulation', kicker: 'InteriorAgent + GRScene', count: '74', unit: 'test scenes',
@@ -92,8 +99,8 @@ const settings = {
     f1: [93.0, 93.9, 94.4, 94.7, 94.6, 94.9, 95.4], iou: [73.9, 74.5, 75.1, 76.9, 78.9, 81.7, 83.8], avgF1: '94.4%', avgIou: '77.8%'
   },
   robot: {
-    title: 'VoxRoom · real robot', kicker: 'Direct simulation-to-real transfer', count: '9', unit: 'runs · 5 apartments',
-    description: 'Online segmentation at 0.5 Hz. The verifier is trained only in simulation, with no real-world fine-tuning.',
+    title: 'VoxRoom · real robot', kicker: 'Real-robot experiments', count: '9', unit: 'runs · 5 apartments',
+    description: 'The paper evaluates a simulation-trained verifier on nine robot runs at 0.5 Hz.',
     protocol: 'Equal weighting across nine runs at each stage. Average then combines the seven evaluation stages.',
     f1: [94.5, 94.7, 93.9, 95.3, 95.4, 95.6, 97.2], iou: [85.7, 87.5, 66.8, 79.5, 76.1, 74.4, 81.2], avgF1: '95.2%', avgIou: '78.7%'
   }
@@ -158,7 +165,7 @@ if (window.ResizeObserver) new ResizeObserver(entries => {
   if (Math.max(220, Math.round(entries[0].contentRect.width)) !== chartWidth) renderChart(activeSetting);
 }).observe(document.getElementById('progress-chart'));
 
-// Paper tables remain readable without JavaScript; tabs progressively enhance them.
+// Table selection.
 const paperTabs = [...document.querySelectorAll('[data-paper-tab]')];
 function selectPaperTable(key) {
   paperTabs.forEach(tab => {

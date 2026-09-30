@@ -39,13 +39,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--threshold-selection-mode",
         choices=["fixed", "target_recall"],
         default="fixed",
-        help="Validation and checkpoint operating point; defaults to a fixed threshold.",
+        help="Use a fixed score threshold or choose one for the target recall.",
     )
     parser.add_argument(
         "--fixed-keep-threshold",
         type=float,
         default=0.5,
-        help="Accept probabilities at or above this threshold when fixed mode is selected.",
+        help="Score threshold for fixed mode (default: 0.5).",
     )
     parser.add_argument("--max-pos-weight", type=float, default=10.0)
     parser.add_argument("--positive-class-weight", type=float, default=5.60)
@@ -60,12 +60,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--train-rotation-degrees",
         type=_parse_rotation_degrees,
         default=(0, 90, 180, 270),
-        help="Comma-separated deterministic train rotations; defaults to 0,90,180,270.",
+        help="Training rotations in degrees (default: 0,90,180,270).",
     )
     parser.add_argument(
         "--train-mirror-lr-once",
         action=argparse.BooleanOptionalAction, default=True,
-        help="Add one deterministic left-right mirrored copy of every base training sample.",
+        help="Add a left-right mirrored copy of each training sample.",
     )
     parser.add_argument("--local-only", action="store_true")
     parser.add_argument("--context-only", action="store_true")

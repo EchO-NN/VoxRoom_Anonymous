@@ -1,17 +1,15 @@
 # Third-party provenance
 
-The MIT notice for B0GGY (2023) is retained for the inherited TVARS-related code.
-The ray-casting candidate extraction follows TVARS, as acknowledged in the
-manuscript. The release retains baseline adapters and upstream project references
-where they describe third-party implementations.
+The TVARS-related code retains the MIT notice for B0GGY (2023). The 2D
+ray-casting candidate extraction follows TVARS. Baseline adapters link to their
+upstream implementations.
 
-Isaac Sim, nvblox, FAST-LIO2, ROS, dataset assets, and externally supplied model
-weights retain their own distribution terms and are not redistributed here.
-The repository license does not replace their licenses. NumPy, SciPy, PyTorch,
-and other installed dependencies also retain their own notices.
+Isaac Sim, nvblox, FAST-LIO2, ROS, datasets, and external model weights are
+obtained separately under their respective licenses. NumPy, SciPy, PyTorch,
+and other installed dependencies retain their own notices.
 
-Optional baseline fallback implementations are diagnostic utilities. They must
-not be substituted for named original baselines in paper comparisons.
+Fallback baseline implementations support local debugging. Paper comparisons
+use the original baseline implementations.
 
 The project website bundles the Inter variable font from the
 [Inter project](https://github.com/rsms/inter), distributed under the SIL Open

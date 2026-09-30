@@ -227,13 +227,10 @@ def extract_door_seed_stage_incremental(
     update_mask_xy: np.ndarray | None,
     halo_cells: int = 8,
 ) -> DoorSeedStageResult:
-    """Refresh collection evidence only where the latest camera frusta reached.
+    """Refresh collection evidence within the latest sensor update.
 
-    The first call intentionally builds a full-map cache.  Later calls run the
-    existing, authoritative classifiers on a cropped voxel grid with a halo and
-    commit only cells in ``update_mask_xy``.  Consequently, cells outside the
-    accumulated sensor footprint retain their previous classification while
-    TVARS can still consume a coherent full-map Vertical Free layer.
+    The first call builds the full map. Later calls classify a crop with a halo
+    and replace cells in ``update_mask_xy``, retaining the remaining SFM cells.
     """
 
     shape = tuple(voxel_grid.shape)

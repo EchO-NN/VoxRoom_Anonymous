@@ -18,7 +18,7 @@ from voxroom_online.isaac_runtime.door_seed_learning.scene_split import (
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate the explicit paper scene manifest and export its split JSON.")
-    parser.add_argument("--manifest", required=True, help="CSV with scene_id,dataset,split; assignments must be supplied explicitly.")
+    parser.add_argument("--manifest", required=True, help="CSV containing scene_id,dataset,split assignments")
     parser.add_argument("--out", required=True)
     parser.add_argument("--list-dir", default=None)
     args = parser.parse_args(argv)

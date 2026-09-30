@@ -22,7 +22,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--collection-root", required=True)
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--config", default="configs/voxroom_online.yaml")
-    parser.add_argument("--split-file", required=True, help="Validated scene split JSON from create_door_seed_scene_split --manifest.")
+    parser.add_argument("--split-file", required=True, help="Scene split JSON produced by create_door_seed_scene_split")
     parser.add_argument("--allow-draft", action="store_true")
     parser.add_argument("--skip-resolve", action="store_true")
     args = parser.parse_args(argv)

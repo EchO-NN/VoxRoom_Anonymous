@@ -57,7 +57,7 @@ class DoorSeedModelConfig:
 
 
 class DoorSeedClassifier:
-    """Lazy factory that keeps rules-only imports independent of torch."""
+    """Load PyTorch when constructing the verifier."""
 
     def __new__(cls, config: DoorSeedModelConfig | Mapping[str, object]):
         return build_door_seed_model(config)
@@ -186,12 +186,7 @@ def _model_class():
             return self.forward_encoded(local_map, context)
 
         def encode_columns(self, columns):
-            """Independent [N,4,Z] columns -> [N,2*C]; no XY-position dependency.
-
-            This remains differentiable for ordinary training. Only the inference
-            engine may memoize its outputs, with dropout disabled and no gradients.
-            Module names and checkpoint parameter keys are unchanged.
-            """
+            """Encode [N,4,Z] columns as pooled [N,2*C] features."""
             if self.column_stem is None:
                 raise ValueError("model has no voxel branch")
             if columns.ndim != 3 or tuple(columns.shape[1:]) != (4, int(self.model_config.z_count)):
@@ -201,7 +196,7 @@ def _model_class():
             return torch.cat((encoded.mean(dim=1), encoded.amax(dim=1)), dim=1)
 
         def forward_encoded(self, local_map, context=None):
-            """Run the unchanged XY CNNs/head on spatially assembled column features."""
+            """Classify spatial column features and the 2D context patch."""
             features = []
             batch = None
             if self.local_xy is not None:

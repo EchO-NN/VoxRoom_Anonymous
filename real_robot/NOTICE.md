@@ -1,10 +1,8 @@
 # Component notices
 
-The M200 input bridge, body-to-LiDAR transform, clock/transform helpers and
-OctoMap dense exporter are adapted from the existing robot deployment. Their
-MIT notice is preserved in [LICENSE](LICENSE). The VoxRoom algorithm is imported
-from the repository root; this directory does not contain a separate model or
-segmentation implementation.
+The M200 input bridge, body-to-LiDAR transform, clock helpers, and OctoMap
+exporter retain the MIT notice in [LICENSE](LICENSE). The robot interface
+imports the VoxRoom model and segmentation code from the repository root.
 
 External dependencies retain their respective licenses:
 
@@ -16,5 +14,5 @@ External dependencies retain their respective licenses:
 | Livox ROS message definitions | [Livox-SDK/livox_ros_driver2](https://github.com/Livox-SDK/livox_ros_driver2); external message dependency, not the sensing device |
 | OctoMap and ROS 2 octomap_server | [OctoMap](https://github.com/OctoMap/octomap) and [octomap_mapping](https://github.com/OctoMap/octomap_mapping) |
 
-No manufacturer driver source, SLAM source, hardware SDK, system binaries,
-recordings, or map data are redistributed in this directory.
+Install the drivers, SLAM packages, and hardware SDKs from their upstream
+projects. Recordings and map data are supplied separately.

@@ -137,7 +137,7 @@ class DoorSeedCollector:
         )
 
     def finalize_last_snapshot(self, *, termination_reason: str) -> dict[str, object]:
-        """Durably mark the latest committed decision as final after interruption."""
+        """Mark the last saved decision as final after an interrupted run."""
 
         finals = [item for item in self.manifest.get("snapshots", []) if bool(item.get("is_final", False))]
         if finals:

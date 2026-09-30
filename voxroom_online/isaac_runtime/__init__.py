@@ -1,7 +1,6 @@
 """Isaac Sim + InteriorAgent runtime support for VoxRoom-Online.
 
-The package intentionally keeps Isaac Sim imports lazy so plain preprocessing
-and lightweight tests can run in a normal Python environment.
+Isaac Sim imports are deferred so preprocessing and tests can run separately.
 """
 
 __all__ = ["__version__"]

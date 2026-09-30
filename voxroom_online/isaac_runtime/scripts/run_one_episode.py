@@ -1077,24 +1077,6 @@ def _roomseg_voxel_snapshot_arrays(mapper: object) -> dict[str, np.ndarray]:
     }
 
 
-def _roomseg_memory_snapshot_arrays(room_segmenter: object | None) -> dict[str, np.ndarray]:
-    if room_segmenter is None:
-        return {}
-    debug = dict(getattr(room_segmenter, "last_debug", {}) or {})
-    out: dict[str, np.ndarray] = {}
-    for key in (
-        "voxel_roomseg_memory_before_json",
-        "voxel_roomseg_memory_after_json",
-        "voxel_door_memory_before_roomseg_json",
-        "voxel_door_memory_after_roomseg_json",
-        "voxel_separator_memory_before_roomseg_json",
-        "voxel_separator_memory_after_roomseg_json",
-    ):
-        if key in debug:
-            out[key] = np.asarray(str(debug[key]))
-    return out
-
-
 def _roomseg_observation_snapshot_arrays(
     obs: Mapping[str, object] | None,
     *,
@@ -6104,12 +6086,11 @@ def run_episode_isaac_closed_loop(episode: dict, args) -> dict:
                 if bool(getattr(args, "save_roomseg_voxel_evidence", False))
                 else None
             )
-            memory_snapshot_arrays = _roomseg_memory_snapshot_arrays(room_segmenter)
             extra_npz_arrays = {
                 **dict(voxel_snapshot_arrays or {}),
-                **dict(memory_snapshot_arrays or {}),
                 **dict(observation_npz_arrays or {}),
                 **map_info_extra_arrays(map_state.get("map_info")),
+                "agent_yaw_deg": np.asarray(yaw_deg_from_map_state(map_state), dtype=np.float32),
             }
             nav_free_mask, nav_obstacle_mask, nav_unknown_mask, _nav_source = resolve_replay_style_navigation_masks(
                 mapper=mapper,
@@ -6682,7 +6663,7 @@ def run_episode_isaac_closed_loop(episode: dict, args) -> dict:
                 )
                 extra_arrays = {
                     **strict_voxel_snapshot_arrays(mapper),
-                    **_roomseg_memory_snapshot_arrays(room_segmenter),
+                    "agent_yaw_deg": np.asarray(yaw_deg_from_map_state(map_state_local), dtype=np.float32),
                     **_roomseg_observation_snapshot_arrays(
                         baseline_obs,
                         rgb=np.asarray(baseline_obs["rgb"], dtype=np.uint8),

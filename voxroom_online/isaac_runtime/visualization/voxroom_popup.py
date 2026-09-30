@@ -2228,12 +2228,10 @@ class VoxRoomPopupVisualizer:
         door_partition_candidate = self._room_debug_array("voxel_door_partition_cut_candidate_mask", shape, bool)
         door_partition_rejected = self._room_debug_array("voxel_door_partition_cut_rejected_mask", shape, bool)
         door_topology_warning = self._room_debug_array("voxel_door_topology_warning_cut_mask", shape, bool)
-        stable_door_cut = self._room_debug_array("voxel_stable_door_cut_mask", shape, bool)
-        stable_door_visual = self._room_debug_array("voxel_stable_door_visual_mask", shape, bool)
         door_cut = self._room_debug_array("voxel_door_cut_mask", shape, bool)
         if not np.any(door_cut):
             door_cut = self._room_debug_array("voxel_door_partition_cut_accepted_mask", shape, bool)
-        door_visual_debug = door_visual_all & ~door_topology_effective & ~stable_door_cut
+        door_visual_debug = door_visual_all & ~door_topology_effective
         door_trial = self._room_debug_array("voxel_door_trial_candidate_lines_map", shape, bool)
         door_trial_rejected = self._room_debug_array("voxel_door_trial_rejected_lines_map", shape, bool)
         door_selected = self._room_debug_array("voxel_door_selected_candidate_lines_map", shape, bool)
@@ -2242,7 +2240,6 @@ class VoxRoomPopupVisualizer:
         if not np.any(step1_completed):
             step1_completed = self._room_debug_array("voxel_wall_after_step1_map", shape, bool)
         step2 = self._room_debug_array("voxel_step2_extension_separator_map", shape, bool)
-        stable_step2 = self._room_debug_array("voxel_stable_step2_separator_mask", shape, bool)
         projected_step2_source = self._room_debug_array("voxel_step2_projected_source_line_map", shape, bool)
         step2_hits = self._room_debug_array("voxel_step2_extension_hits_all_map", shape, bool)
         if not np.any(step2_hits):
@@ -2332,13 +2329,10 @@ class VoxRoomPopupVisualizer:
             canvas[rejected] = (130, 112, 118)
         canvas[step1] = (245, 215, 55)
         canvas[step2] = (220, 60, 255)
-        canvas[stable_step2 & ~step2] = (175, 45, 210)
         if show_diag:
             canvas[door_visual_debug & ~door_topology_effective] = (0, 135, 60)
-            canvas[stable_door_visual & ~door_topology_effective] = (115, 205, 175)
         canvas[door_topology_effective] = (90, 255, 70)
         canvas[door_cut] = (90, 255, 70)
-        canvas[stable_door_cut] = (255, 95, 190)
         canvas[door_primitive & ~door_extensible_primitive & ~door_cut] = (35, 115, 255)
         canvas[door_extensible_primitive & ~door_cut] = (0, 205, 255)
         canvas[extensible_door_seed] = (50, 125, 255)
@@ -2406,8 +2400,6 @@ class VoxRoomPopupVisualizer:
                 integrate_text = "%.1fms" % float(integrate_ms)
             except (TypeError, ValueError):
                 integrate_text = "NA"
-            stable_count = int(np.count_nonzero(stable_door_cut))
-            stable_step2_count = int(np.count_nonzero(stable_step2))
             warning_count = int(np.count_nonzero(door_topology_warning))
             update_reason = str(self._room_segmentation_debug.get("roomseg_frontier_update_reason", "NA"))
             title_a = "voxel v32 | raw=%d keep=%d reject=%d cc=%d clusters=%d prim=%d ext=%d cut=%d" % (
@@ -2422,7 +2414,7 @@ class VoxRoomPopupVisualizer:
             )
             raw_seed_not_blocking = int(bool(self._room_segmentation_debug.get("voxel_step2_block_topology_effective_door_only", False)))
             seed_not_in_free = int(bool(self._room_segmentation_debug.get("voxel_seed_not_added_to_partition_free", False)))
-            title_b = "wall=%d proj=%d red=%d outside=%d step2_src=%d hit=%d door_final_cut=%d stable_s2=%d raw_seed_not_blocking_step2=%d seed_not_in_partition_free=%d" % (
+            title_b = "wall=%d proj=%d red=%d outside=%d step2_src=%d hit=%d door_final_cut=%d raw_seed_not_blocking_step2=%d seed_not_in_partition_free=%d" % (
                 wall_line_support_count,
                 projected_wall_count,
                 display_wall_count,
@@ -2430,7 +2422,6 @@ class VoxRoomPopupVisualizer:
                 step2_source_count,
                 step2_hit_count,
                 door_cut_count,
-                stable_step2_count,
                 raw_seed_not_blocking,
                 seed_not_in_free,
             )
@@ -2519,9 +2510,6 @@ class VoxRoomPopupVisualizer:
                 door_partition_rejected_cells=int(np.count_nonzero(door_partition_rejected)),
                 door_topology_warning_cells=int(np.count_nonzero(door_topology_warning)),
                 door_cut_cells=int(np.count_nonzero(door_cut)),
-                stable_door_cut_cells=int(np.count_nonzero(stable_door_cut)),
-                stable_door_visual_cells=int(np.count_nonzero(stable_door_visual)),
-                stable_step2_separator_cells=int(np.count_nonzero(stable_step2)),
                 projected_step2_source_cells=int(np.count_nonzero(projected_step2_source)),
                 step2_hit_cells=int(np.count_nonzero(step2_hits)),
                 step2_pre_topology_cells=int(np.count_nonzero(step2_pre_topology)),
@@ -2577,7 +2565,7 @@ class VoxRoomPopupVisualizer:
             self._overlay_record("voxel_door_rejected_primitive", bool(show_diag and np.any(door_rejected_primitive)), (190, 140, 80), int(np.count_nonzero(door_rejected_primitive)), "diagnostic v32 seed line primitives rejected before extension"),
             self._overlay_record("voxel_extensible_door_seed", bool(show_diag and np.any(extensible_door_seed)), (50, 125, 255), int(np.count_nonzero(extensible_door_seed)), "diagnostic v26 seed groups that passed accepted-extension gating"),
             self._overlay_record("voxel_nonextensible_door_seed", bool(show_diag and np.any(nonextensible_door_seed)), (0, 55, 150), int(np.count_nonzero(nonextensible_door_seed)), "diagnostic raw door seed kept as evidence only and not used to block Step2"),
-            self._overlay_record("voxel_step2_block_mask", bool(show_diag and np.any(step2_block)), (78, 210, 118), int(np.count_nonzero(step2_block)), "accepted or stable doors that may block Step2; raw seed is excluded"),
+            self._overlay_record("voxel_step2_block_mask", bool(show_diag and np.any(step2_block)), (78, 210, 118), int(np.count_nonzero(step2_block)), "accepted door cuts that block Step2 extensions"),
             self._overlay_record("voxel_door_extension_attempt", bool(show_diag and np.any(door_attempt)), (0, 120, 40), int(np.count_nonzero(door_attempt)), "diagnostic all door extension attempt paths"),
             self._overlay_record("voxel_door_trial_candidates", bool(show_diag and np.any(door_trial)), (54, 96, 74), int(np.count_nonzero(door_trial)), "diagnostic all door orientation trial lines"),
             self._overlay_record("voxel_door_selected_candidates", bool(show_diag and np.any(door_selected)), (0, 180, 70), int(np.count_nonzero(door_selected)), "diagnostic selected door candidate line per seed cluster"),
@@ -2587,12 +2575,9 @@ class VoxRoomPopupVisualizer:
             self._overlay_record("voxel_door_partition_cut_candidate", bool(show_diag and np.any(door_partition_candidate)), (170, 220, 80), int(np.count_nonzero(door_partition_candidate)), "diagnostic door partition cut candidates"),
             self._overlay_record("voxel_door_partition_cut_rejected", bool(show_diag and np.any(door_partition_rejected)), (255, 100, 50), int(np.count_nonzero(door_partition_rejected)), "diagnostic door partition cut rejected by topology"),
             self._overlay_record("voxel_door_topology_warning_cut", bool(show_diag and np.any(door_topology_warning)), (255, 205, 70), int(np.count_nonzero(door_topology_warning)), "door partition cut accepted by geometry while topology no-gain is recorded as warning"),
-            self._overlay_record("voxel_stable_door_cut", bool(np.any(stable_door_cut)), (55, 235, 155), int(np.count_nonzero(stable_door_cut)), "stable door memory cut ORed into final partition"),
-            self._overlay_record("voxel_stable_door_visual", bool(show_diag and np.any(stable_door_visual)), (55, 210, 155), int(np.count_nonzero(stable_door_visual)), "stable door memory visual centerline"),
-            self._overlay_record("voxel_door_cut", bool(np.any(door_cut)), (80, 255, 80), int(np.count_nonzero(door_cut)), "final door partition cut including geometry-first and stable memory"),
+            self._overlay_record("voxel_door_cut", bool(np.any(door_cut)), (80, 255, 80), int(np.count_nonzero(door_cut)), "door partition cut from the current map"),
             self._overlay_record("voxel_step1_gap_fill", bool(np.any(step1)), (245, 215, 55), int(np.count_nonzero(step1)), "real-wall short gap fill before virtual separators"),
             self._overlay_record("voxel_step2_extension", bool(np.any(step2)), (220, 60, 255), int(np.count_nonzero(step2)), "accepted Step2 wall-line extension separators"),
-            self._overlay_record("voxel_stable_step2_separator", bool(np.any(stable_step2)), (175, 45, 210), int(np.count_nonzero(stable_step2)), "stable Step2 corridor separators kept by v26 memory"),
             self._overlay_record("voxel_step2_projected_source_line", bool(show_diag and np.any(projected_step2_source)), (170, 170, 190), int(np.count_nonzero(projected_step2_source)), "diagnostic projected wall line objects included in Step2 source pool"),
             self._overlay_record("voxel_step2_source_line", bool(show_diag and "voxel_step2_source_line_count" in self._room_segmentation_debug), (160, 160, 170), int(self._room_segmentation_debug.get("voxel_step2_source_line_count", 0) or 0), "diagnostic Step2 source line pool after filtered+relaxed dedup"),
             self._overlay_record("voxel_step2_extension_hits", bool(show_diag and np.any(step2_hits)), (160, 80, 255), int(np.count_nonzero(step2_hits)), "diagnostic all Step2 extension hit traces"),

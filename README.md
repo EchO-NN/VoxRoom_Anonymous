@@ -2,28 +2,22 @@
 
 **Room Segmentation from Partial Observations during Robot Exploration**
 
-**Project website:** [https://echo-nn.github.io/VoxRoom_Anonymous/](https://echo-nn.github.io/VoxRoom_Anonymous/)
-
-Watch the videos and explore the method and experimental results on the website.
-
-The implementation constructs a
-Structural Free Map (SFM), combines 3D column evidence with 2D ray-casting entry
-candidates, verifies candidates with a dual-branch neural network, and fits
-separators to partition the observed structural-free domain.
-
-[Method and parameters](docs/method.md) ·
+[Project page and videos](site/index.html) · [Method](docs/method.md) ·
 [Evaluation](docs/evaluation.md) · [Real robot](docs/real_robot.md)
 
-## Overview
+VoxRoom segments rooms from the observations collected during robot exploration.
+It builds a Structural Free Map (SFM), combines 3D column evidence with 2D
+ray-casting entry candidates, verifies candidates with a dual-branch network,
+and fits separators to partition the observed free space. A separate Nav-Free
+Map supports navigation and coverage measurement.
 
-The SFM aggregates free-space evidence across heights to preserve structural
-connectivity in clutter. The Nav-Free Map is used separately for navigation and
-exploration coverage. Both simulation and real-robot interfaces share the same
-segmentation and verification modules.
+At each update, candidates and separators are computed from the current
+accumulated voxel observations. Separators from previous updates are discarded.
+Simulation, replay, and real-robot inputs use the same segmentation core.
 
-## Install and run a CPU smoke test
+## Install and try the geometry pipeline
 
-From the extracted repository directory, using Python 3.11 or newer:
+Use Python 3.11 or newer. From the repository root:
 
 ```bash
 python -m venv .venv
@@ -33,12 +27,11 @@ voxroom-replay --demo --rules-only --output outputs/smoke
 pytest -q
 ```
 
-The generated two-room fixture tests the geometry path. `--rules-only` explicitly
-bypasses the verifier and is a diagnostic ablation, not the full method. Outputs
-are room-label arrays, the structural evaluation domain, separators, and a JSON
-summary. No simulator, scene assets, or downloads are needed for this smoke test.
+This runs a generated two-room example without a simulator or scene assets.
+`--rules-only` skips the learned verifier. The output contains room labels,
+the SFM evaluation domain, separators, and a JSON summary.
 
-## Replay observed voxels with learned verification
+## Replay with the learned verifier
 
 ```bash
 voxroom-replay --snapshot data/roomseg_step_000100.npz \
@@ -46,9 +39,10 @@ voxroom-replay --snapshot data/roomseg_step_000100.npz \
   --output outputs/replay
 ```
 
-For a fixed-grid trajectory, `--sequence data/trajectory/roomseg_snapshots`
-processes zero-padded `roomseg_step_*.npz` in order and preserves separator memory.
-Each NPZ must contain:
+For a trajectory on a fixed grid, use
+`--sequence data/trajectory/roomseg_snapshots`. Replay processes zero-padded
+`roomseg_step_*.npz` files in order and computes segmentation for each snapshot.
+Each NPZ contains:
 
 | Key | Shape / meaning |
 | --- | --- |
@@ -61,9 +55,8 @@ Each NPZ must contain:
 | `voxel_occupancy_z_resolution_m` | 0.05 m |
 | `voxel_occupancy_active_z_min_m`, `voxel_occupancy_active_z_max_m` | Ground-to-upper-structure interval |
 
-The XY resolution is 0.05 m. Learned replay requires a trained checkpoint and
-valid input metadata. Failure to load weights or incompatible preprocessing is
-an error rather than a switch to geometric-only results.
+The XY resolution is 0.05 m. Learned inference requires a trained checkpoint
+with matching architecture and preprocessing.
 
 ## Training and evaluation
 
@@ -72,31 +65,35 @@ voxroom-train --help
 python scripts/evaluate_paper.py --help
 ```
 
-Training configuration: [configs/paper_training.yaml](configs/paper_training.yaml).
-The development split is 16 training scenes and 4 disjoint validation
-scenes, with 8/8 and 2/2 InteriorAgent/GRScene scenes respectively. Scene assets,
-annotations, scene splits, and collected candidate manifests are inputs to
-training. See the method
-documentation for the training command and exact defaults.
+[Training instructions](docs/method.md#entry-seed-verifier-and-training) use the
+settings in [configs/paper_training.yaml](configs/paper_training.yaml). The paper
+uses 16 training scenes and 4 validation scenes: 8/8 and 2/2
+InteriorAgent/GRScene scenes, respectively.
 
-The paper evaluator uses the observed SFM domain, retains disconnected fragments
-of a ground-truth room under one identity, and aggregates stages → trajectories →
-scenes. It checks completeness of the stated test protocol unless an incomplete
-diagnostic report is explicitly requested.
+The [evaluator](docs/evaluation.md) scores the observed SFM domain and averages
+stages within trajectories, trajectories within scenes, and scenes equally.
+Ground-truth room identities are preserved across disconnected visible fragments.
 
-## Simulation and real-world inputs
+This release includes the implementation, configurations, and evaluation tools.
+The trained checkpoint, exact scene lists, candidate annotations, shared test
+trajectories, and raw experiment data are not included. Scene assets must be
+obtained separately. The website reports results from the paper; reproducing
+those tables requires these experiment inputs. The released verifier uses
+PyTorch; the TensorRT FP16 deployment used for the paper's timing measurements
+is not included.
 
-The simulator runtime is retained under `voxroom_online/isaac_runtime`. Full
-online collection requires Isaac Sim, nvblox, and separately obtained scene
-assets; configure their paths in `configs/voxroom_online.yaml`. The portable
-replay and training paths do not require launching Isaac Sim.
+## Simulation and robot inputs
 
-The robot pipeline uses FAST-LIO2 poses and OctoMap occupancy in a gravity-aligned
-frame. See [real-robot setup](docs/real_robot.md) for dependencies and launch
-commands.
+The simulator runtime is in `voxroom_online/isaac_runtime`. Online collection
+uses Isaac Sim, nvblox, and scene assets configured in
+`configs/voxroom_online.yaml`. Replay and training can run independently of
+Isaac Sim.
 
-## Attribution
+The robot pipeline uses FAST-LIO2 poses and OctoMap occupancy in a
+gravity-aligned frame. See [robot setup](docs/real_robot.md) for dependencies
+and launch commands.
 
-Third-party provenance and required notices are retained in
-[THIRD_PARTY.md](THIRD_PARTY.md) and [LICENSE](LICENSE). Bibliographic author
-metadata for this work is withheld during anonymous review.
+## License and attribution
+
+See [LICENSE](LICENSE) and [THIRD_PARTY.md](THIRD_PARTY.md) for the project
+license and third-party notices.

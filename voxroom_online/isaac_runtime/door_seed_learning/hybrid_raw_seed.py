@@ -29,13 +29,10 @@ def yaw_deg_from_map_state(map_state: Mapping[str, object]) -> float:
 
 
 class VoxroomTvarsRawSeedAccumulator:
-    """Combine current VoxRoom/TVARS raw seeds and retain a final label superset.
+    """Combine 3D and 2D candidates on the Structural Free Map.
 
-    Non-final snapshots contain the union produced at that decision.  The final
-    snapshot contains the union of every candidate seen during the episode, so
-    one final annotation can be propagated safely back to all prior snapshots.
-    TVARS range jumps and line pairing are always computed on Vertical Free and
-    its vertical-wall/unknown complement, never on navigation free space.
+    Each update uses current candidates by default. Collection can also retain
+    their history so one final annotation covers candidates from earlier steps.
     """
 
     def __init__(self, config: DoorSeedLearningConfig | Mapping[str, object]) -> None:

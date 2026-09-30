@@ -132,8 +132,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             "voxel_door_topology_effective_cut_mask",
             "voxel_current_door_cut_mask",
             "voxel_current_door_topology_effective_mask",
-            "voxel_stable_door_cut_mask",
-            "voxel_door_stable_cut_mask",
             "partial_door_extension_cut_mask",
             "door_completion_boundary_mask",
         ),

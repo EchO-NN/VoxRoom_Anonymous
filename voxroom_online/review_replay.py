@@ -1,4 +1,4 @@
-"""Portable sequential replay of the paper pipeline, independent of the simulator."""
+"""Replay saved voxel observations through VoxRoom."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,7 @@ from voxroom_online.isaac_runtime.scripts.replay_voxel_roomseg_snapshots import 
 
 
 def synthetic_snapshot() -> dict[str, np.ndarray]:
-    """Two synthetic rooms and one lintel; this is a software fixture, not evaluation data."""
+    """Create a two-room test map with one doorway and lintel."""
     state = np.zeros((60, 64, 80), dtype=np.uint8)
     state[:, 4:60, 4:76] = 1
     state[:, 4:60, (4, 75)] = 2
@@ -45,11 +45,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--config", default="configs/voxroom_online.yaml")
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument("--snapshot", type=Path)
-    inputs.add_argument("--sequence", type=Path, help="Directory of zero-padded roomseg_step_*.npz from one fixed-grid trajectory")
-    inputs.add_argument("--demo", action="store_true", help="Generate synthetic software fixture")
+    inputs.add_argument("--sequence", type=Path, help="Directory of roomseg_step_*.npz snapshots from one fixed-grid trajectory")
+    inputs.add_argument("--demo", action="store_true", help="Generate a synthetic two-room map")
     parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--rules-only", action="store_true", help="Diagnostic ablation: bypass learned verification; never a full-method result")
+    parser.add_argument("--rules-only", action="store_true", help="Run the ablation without learned verification")
     parser.add_argument("--output", type=Path, default=Path("outputs/replay"))
     args = parser.parse_args(argv)
     config = load_config(args.config)
@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         checkpoint = args.checkpoint or Path(learning["checkpoint_path"])
         if not checkpoint.is_file():
-            parser.error("learned verification requires a compatible trained checkpoint; supply --checkpoint. Use --demo --rules-only only for a software smoke test.")
+            parser.error("checkpoint not found; supply --checkpoint or use --rules-only for the geometric ablation")
         learning.update(mode="inference", checkpoint_path=str(checkpoint))
     room_config["door_seed_learning"] = learning
     paths = [None] if args.demo else ([args.snapshot] if args.snapshot else sorted(args.sequence.glob("roomseg_step_*.npz")))
@@ -104,8 +104,7 @@ def main(argv: list[str] | None = None) -> int:
         result = segmenter.last_result
         if result is None:
             raise RuntimeError("segmentation returned no result")
-        # The online planner API returns the navigation projection. Evaluation
-        # must use the structural partition before this projection clips it.
+        # Score structural labels before projecting them onto navigation free space.
         labels = np.asarray(result.layers["voxel_vertical_free_partition_room_label_map"], dtype=np.int32)
         structural_free = np.asarray(result.layers["voxel_vertical_free_xy"], dtype=bool)
         output_arrays = dict(pred_labels=labels, sfm_free=structural_free, navigation_labels=result.room_label_map, separators=result.separator_map)

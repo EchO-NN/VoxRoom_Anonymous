@@ -21,7 +21,7 @@ class DoorSeedLearningConfig:
     tvars_seed_width_cells: int = 3
     persistent_final_raw_seed_union: bool = False
     save_full_voxel_milestones: bool = False
-    full_voxel_coverage_milestones: str = "30,40,50,60,70,80,90"
+    full_voxel_coverage_milestones: str = "20,40,60,70,80,90"
 
     local_voxel_patch_size: int = 19
     context_patch_size: int = 41

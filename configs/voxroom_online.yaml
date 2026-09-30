@@ -711,33 +711,6 @@ mapping:
       strong_seed_centerline_min_length_cells: 3
       strong_seed_centerline_min_elongation: 1.6
       strong_seed_centerline_max_residual_cells: 1.25
-      door_memory_enabled: true
-      door_memory_initial_confidence: 1.0
-      door_memory_match_iou_min: 0.05
-      door_memory_match_distance_cells: 6
-      door_memory_match_angle_deg: 20.0
-      door_memory_observation_dilation_cells: 2
-      door_memory_min_observed_cells_for_decay: 2
-      door_memory_contradiction_band_cells: 2
-      door_memory_min_observed_cells_for_contradiction: 4
-      door_memory_contradict_wall_ratio: 0.75
-      door_memory_contradictions_to_prune: 5
-      door_memory_match_dilation_cells: 2
-      door_memory_dilated_iou_min: 0.1
-      door_memory_seed_overlap_min: 0.2
-      door_memory_anchor_match_distance_cells: 4
-      door_memory_weak_refresh_updates_visual: false
-      door_memory_replace_quality_margin: 0.2
-      door_memory_allow_verified_geometry_replace: true
-      door_memory_freeze_geometry_unless_ceiling_changes: true
-      door_memory_ceiling_change_threshold_m: 0.05
-      door_memory_prevent_shrinking_stable_cut: true
-      door_memory_min_length_ratio_to_replace: 0.8
-      door_memory_decay_per_update: 0.02
-      door_memory_confirm_increment: 0.35
-      door_memory_weak_refresh_increment: 0.12
-      door_memory_min_confidence_to_keep: 0.15
-      door_memory_ttl_updates: 30
       show_candidate_lines_in_debug: true
     voxel_roomseg:
       use_real_wall_as_partition_barrier: true

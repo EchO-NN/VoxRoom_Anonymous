@@ -202,12 +202,6 @@ ROOMSEG_ARRAY_KEYS = (
     "voxel_door_partition_reject_reason_id_map",
     "voxel_current_door_cut_mask",
     "voxel_current_door_topology_effective_mask",
-    "voxel_stable_door_cut_mask",
-    "voxel_door_stable_cut_mask",
-    "voxel_stable_door_visual_mask",
-    "voxel_door_memory_observed_decay_band_mask",
-    "voxel_door_memory_unobserved_track_mask",
-    "voxel_door_memory_contradiction_mask",
     "voxel_step1_wall_gap_fill_map",
     "voxel_wall_after_step1_map",
     "voxel_step2_extension_candidate_map",
@@ -369,12 +363,6 @@ ROOMSEG_SNAPSHOT_ARRAY_KEYS = (
     "voxel_door_partition_reject_reason_id_map",
     "voxel_current_door_cut_mask",
     "voxel_current_door_topology_effective_mask",
-    "voxel_stable_door_cut_mask",
-    "voxel_door_stable_cut_mask",
-    "voxel_stable_door_visual_mask",
-    "voxel_door_memory_observed_decay_band_mask",
-    "voxel_door_memory_unobserved_track_mask",
-    "voxel_door_memory_contradiction_mask",
     "voxel_step1_wall_gap_fill_map",
     "voxel_wall_after_step1_map",
     "voxel_step2_extension_candidate_map",
@@ -794,9 +782,6 @@ def summarize_roomseg_arrays(arrays: Mapping[str, np.ndarray], room_debug: Mappi
         "voxel_door_line_primitives",
     )
     voxel_door_summary = {key: room_debug.get(key, {} if key.endswith("_counts") else 0) for key in voxel_door_summary_keys}
-    voxel_door_summary["voxel_door_stable_count"] = int(
-        room_debug.get("voxel_door_stable_count", room_debug.get("voxel_door_memory_track_count", 0)) or 0
-    )
     return {
         "step": int(step),
         "algorithm": str(room_debug.get("algorithm", "upstream_rose2_vertical_or_free")),

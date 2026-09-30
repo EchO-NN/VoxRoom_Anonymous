@@ -50,14 +50,13 @@ the LiDAR frame and publishes the corresponding static transform. OctoMap
 therefore traces free-space rays from the physical scan origin rather than
 from the map origin.
 
-The mapping frame, `camera_init`, must have a gravity-aligned Z axis. Supply the
-ground's Z coordinate in that frame with `--floor-z`; this is a calibration
-input, not a segmentation parameter. `--ceiling-height` optionally supplies a
+The mapping frame, `camera_init`, must have a gravity-aligned Z axis. Set
+`--floor-z` to the calibrated ground height in that frame. `--ceiling-height`
+optionally supplies a
 ceiling height above that ground. Otherwise the adapter estimates the ceiling
 from the occupied-layer peak between 1.8 and 4.0 m in the currently accumulated
 voxel evidence, and the shared core updates its active vertical interval.
-Unknown voxels remain unknown; only known OctoMap voxels provide observation
-support.
+Known OctoMap voxels provide observation support; unobserved voxels stay unknown.
 
 ## Start mapping
 
@@ -69,10 +68,10 @@ ros2 launch voxroom_robot mapping.launch.py \
   output_directory:=robot_outputs/observations
 ```
 
-To start the driver as part of the launch, add `start_driver:=true`,
-`adapter:=YOUR_INTERFACE`, and `lidar_ip:=YOUR_SENSOR_ADDRESS`. The launch does
-not configure network interfaces. `max_range` defaults to 5.0 m and is passed
-consistently to the input bridge and OctoMap. The occupancy resolution is 0.05 m.
+To start the driver as part of the launch, configure the host network interface
+and add `start_driver:=true`, `adapter:=YOUR_INTERFACE`, and
+`lidar_ip:=YOUR_SENSOR_ADDRESS`. `max_range` defaults to 5.0 m for both the
+input bridge and OctoMap. The occupancy resolution is 0.05 m.
 For rosbag input, set `use_sim_time:=true` and play the bag with its clock.
 
 The `octomap_snapshot` node samples the latest full probabilistic map every two
@@ -99,12 +98,10 @@ must be multiples of 0.05 m and cover the mapping area; they stay fixed for the
 sequence. Map rows run from maximum to minimum Y, columns from minimum to
 maximum X, and height is relative to the specified ground.
 
-The node processes the latest available observation at a scheduled maximum of
-0.5 Hz, carries segmentation state forward, and discards repeated or older
-timestamps. The verifier uses a fixed score threshold of 0.5. A compatible
-checkpoint is required; inference errors do not silently switch to a
-rules-only method. Processing time is recorded with every output, so achieved
-update rate can be checked on the deployed system.
+The node processes the latest accumulated observation at up to 0.5 Hz and skips
+repeated or older timestamps. It rebuilds candidates and separators at each
+update. The verifier uses a trained checkpoint and a score threshold of 0.5.
+Every output records processing time.
 
 Each timestamp directory contains:
 
@@ -114,11 +111,10 @@ Each timestamp directory contains:
 | `rooms.npz` | SFM room `labels`, separate `nav_labels`, SFM `evaluation_domain`, separators, timestamp and map bounds |
 | `summary.json` | Room count, processing time, ceiling estimate and active vertical limit |
 
-`/voxroom/result` publishes the path to each completed `rooms.npz`. These are
-SFM room instances; navigation projection is available separately. They are
-not globally persistent room-tracking IDs. Record LiDAR, IMU, pose and optional
-RGB topics concurrently using the standard ROS bag tools. RGB is not required
-by the verifier.
+`/voxroom/result` publishes the path to each completed `rooms.npz`. Room IDs
+belong to that snapshot, with navigation labels provided separately. Record
+LiDAR, IMU, pose, and optional RGB topics with ROS bag tools. VoxRoom uses the
+LiDAR map and poses for segmentation.
 
 A saved observation can be processed with the same command plus
 `--observation PATH_TO_OBSERVATION_DIRECTORY`; this mode needs the compiled

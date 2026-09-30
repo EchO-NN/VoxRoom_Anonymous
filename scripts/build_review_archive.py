@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Build a deterministic source ZIP from the staged/tracked review files."""
+"""Package the working files listed in Git into a reproducible source ZIP."""
 from pathlib import Path
 import hashlib
-import re
 import subprocess
 import zipfile
 
@@ -10,29 +9,18 @@ import zipfile
 def main():
     root = Path(__file__).resolve().parents[1]
     files = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")
-    output = root / "site/assets/voxroom-review-source.zip"
+    output = root / "dist/voxroom-review-source.zip"
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for name in sorted(filter(None, files)):
-            if name in {"site/assets/voxroom-review-source.zip", "site/assets/voxroom-review-source.zip.sha256"}:
-                continue
-            # Image sheets are generated from the original videos included below.
-            if name.startswith("site/assets/playback/"):
-                continue
             path = root / name
             if path.is_symlink() or not path.is_file():
                 raise ValueError(f"source archive requires regular files: {name}")
             info = zipfile.ZipInfo("voxroom/" + name, (2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.create_system = 3
-            info.external_attr = 0o100644 << 16
+            info.external_attr = (0o100755 if path.stat().st_mode & 0o111 else 0o100644) << 16
             data = path.read_bytes()
-            if name == "README.md":
-                # Keep the account-bearing website link out of the review ZIP.
-                data = re.sub(
-                    rb"(?m)^\*\*Project website:\*\* .*\n\nWatch the videos[^\n]*\n\n",
-                    b"", data,
-                )
             archive.writestr(info, data)
     digest = hashlib.sha256(output.read_bytes()).hexdigest()
     output.with_suffix(".zip.sha256").write_text(f"{digest}  {output.name}\n")

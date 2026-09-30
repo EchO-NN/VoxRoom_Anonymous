@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Score room label maps and aggregate snapshots with the manuscript protocol.
+"""Score room label maps using the paper's evaluation protocol.
 
-The only runtime dependencies are NumPy and SciPy. Input scores are fractions,
-and output summary scores are percentages. No simulator or model is imported.
+Input scores are fractions; summary scores are percentages.
 """
 from __future__ import annotations
 
@@ -32,9 +31,8 @@ def _labels(value, name):
 def score_snapshot(gt_labels, pred_labels, sfm_free):
     """Eqs. (9)-(10), restricted to currently observed structural-free cells.
 
-    Label zero means unassigned. All cells in the shared evaluation domain must
-    have a positive final ground-truth room ID. Disconnected pieces retain their
-    room ID. No area threshold is applied because none is specified in the paper.
+    Zero denotes an unassigned prediction. Ground-truth IDs cover the shared
+    domain and stay the same across disconnected fragments. All rooms are scored.
     """
     gt = _labels(gt_labels, "gt_labels")
     pred = _labels(pred_labels, "pred_labels")
@@ -106,11 +104,7 @@ def normalize_rows(rows):
 
 
 def protocol_audit(rows):
-    """Check the reported paper counts and a shared set of method snapshots.
-
-    This checks manifest structure, not authenticity of observations, successful
-    training, policy choice, ground truth, or independence of train/test scenes.
-    """
+    """Check scene, trajectory, and stage counts and match snapshots across methods."""
     by_method = defaultdict(list)
     for row in rows:
         by_method[row["method"]].append(row)
@@ -222,12 +216,12 @@ def main():
     source.add_argument("--snapshots", type=Path, help="CSV manifest of NPZ snapshots to score")
     source.add_argument("--scores", type=Path, help="CSV of already computed per-snapshot fractional scores")
     parser.add_argument("--out", type=Path, required=True, help="new output directory")
-    parser.add_argument("--allow-incomplete", action="store_true", help="export diagnostics even when the paper manifest is incomplete")
+    parser.add_argument("--allow-incomplete", action="store_true", help="evaluate a subset of the paper's scenes or stages")
     args = parser.parse_args()
     rows = score_manifest(args.snapshots) if args.snapshots else normalize_rows(read_csv(args.scores))
     summary, stability, audit = aggregate(rows)
     if not audit["paper_manifest_complete"] and not args.allow_incomplete:
-        parser.exit(2, json.dumps(audit, indent=2) + "\nIncomplete paper manifest; use --allow-incomplete only for diagnostic exports.\n")
+        parser.exit(2, json.dumps(audit, indent=2) + "\nIncomplete paper manifest; use --allow-incomplete to evaluate a subset.\n")
     args.out.mkdir(parents=True, exist_ok=False)
     write_csv(args.out / "snapshot_metrics.csv", rows)
     write_csv(args.out / "scene_balanced_metrics.csv", summary)
