@@ -2,10 +2,8 @@
 
 **Room Segmentation from Partial Observations during Robot Exploration**
 
-[Project page and videos](site/index.html) · [Method](docs/method.md) ·
+[Project page and videos](https://anonymous.4open.science/w/VoxRoom-68D0/site/index.html) · [Method](docs/method.md) ·
 [Evaluation](docs/evaluation.md) · [Real robot](docs/real_robot.md)
-
-On Anonymous GitHub, open the repository's GitHub Pages link to view the project page.
 
 VoxRoom segments rooms from the observations collected during robot exploration.
 It builds a Structural Free Map (SFM), combines 3D column evidence with 2D
