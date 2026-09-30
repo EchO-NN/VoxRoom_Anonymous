@@ -11,8 +11,21 @@ const navigation = document.querySelector('.header');
 const navigationToggle = navigation.querySelector('.nav-toggle');
 const mobileNavigation = window.matchMedia('(max-width: 600px)');
 const navigationSections = [...navigation.querySelectorAll('nav a')].map(link => ({
-  link, section: document.querySelector(link.getAttribute('href')),
+  link, section: document.querySelector(link.hash),
 }));
+// Scroll within the page even when an HTML preview supplies its own base URL.
+document.querySelectorAll('a[href^="index.html#"]:not([data-watch])').forEach(link => {
+  link.addEventListener('click', event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const section = document.querySelector(link.hash);
+    section.scrollIntoView();
+    if (link.classList.contains('skip-link')) {
+      section.tabIndex = -1;
+      section.focus({preventScroll: true});
+    }
+  });
+});
 navigation.classList.add('navigation-ready');
 let navigationFrame = null;
 let navigationHeight = 0;

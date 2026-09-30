@@ -5,6 +5,8 @@
 [Project page and videos](site/index.html) · [Method](docs/method.md) ·
 [Evaluation](docs/evaluation.md) · [Real robot](docs/real_robot.md)
 
+On Anonymous GitHub, open the repository's GitHub Pages link to view the project page.
+
 VoxRoom segments rooms from the observations collected during robot exploration.
 It builds a Structural Free Map (SFM), combines 3D column evidence with 2D
 ray-casting entry candidates, verifies candidates with a dual-branch network,

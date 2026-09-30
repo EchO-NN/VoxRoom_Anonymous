@@ -68,5 +68,10 @@ document.querySelectorAll('[data-seek]').forEach(button => {
   });
 });
 document.querySelectorAll('[data-watch]').forEach(link => {
-  link.addEventListener('click', () => players.get(link.dataset.watch).play());
+  link.addEventListener('click', event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    document.querySelector(link.hash).scrollIntoView();
+    players.get(link.dataset.watch).play();
+  });
 });
